@@ -35,5 +35,8 @@ Session.vim
 ### others
 _build
 _deps
+_client
+_server
+local
 META
 .depend
