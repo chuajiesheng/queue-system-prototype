@@ -6,12 +6,12 @@
 PROJECT_NAME := queue_prototype
 
 # Source files for the server
-SERVER_FILES := $(wildcard *.eliomi *.eliom)
+SERVER_FILES := $(wildcard *.eliomi *.eliom *.ml)
 # Source files for the client
 CLIENT_FILES := $(wildcard *.eliomi *.eliom)
 
 # OCamlfind packages for the server
-SERVER_PACKAGES :=
+SERVER_PACKAGES := macaque.syntax
 # OCamlfind packages for the client
 CLIENT_PACKAGES :=
 
