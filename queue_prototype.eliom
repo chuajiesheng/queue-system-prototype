@@ -9,17 +9,26 @@ module Queue_prototype_app =
       let application_name = "queue_prototype"
     end)
 
-let main_service =
-  Eliom_service.service ~path:[] ~get_params:Eliom_parameter.unit ()
+let () = Queue_prototype_app.register
+  ~service:Services.main_service
+  (fun () () ->
+    Pages.home_page
+  )
 
-let () =
-  Queue_prototype_app.register
-    ~service:main_service
-    (fun () () ->
-      Lwt.return
-        (Eliom_tools.F.html
-           ~title:"queue_prototype"
-           ~css:[["css";"queue_prototype.css"]]
-           Html5.F.(body [
-             h2 [pcdata "Welcome from Eliom's destillery!"];
-           ])))
+let () = Queue_prototype_app.register
+  ~service:Services.login_service
+  (fun () () ->
+    Pages.login_page
+  )
+
+let () = Queue_prototype_app.register
+  ~service:Services.auth_service
+  (fun () (username, password) ->
+    Pages.login_page
+  )
+
+let () = Queue_prototype_app.register
+  ~service:Services.sign_up_service
+  (fun () () ->
+    Pages.login_page
+  )
