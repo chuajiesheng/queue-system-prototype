@@ -8,7 +8,7 @@ open Eliom_content.Html5.D
 
 (* ----- Scaffolding: Grid System  ----- *)
 let row = a_class ["row"]
-let check col = ((col mod 12) + 1)
+let check col = (col mod 12)
 let span col = a_class ["span" ^ (string_of_int) (check col)]
 let offset col = a_class ["offset" ^ (string_of_int) (check col)]
 let row_fluid = a_class ["row-fluid"]
@@ -22,6 +22,18 @@ let row_t fluid = match fluid with
 let container_t fluid = match fluid with
   | true -> container_fluid
   | false -> container
+
+(* ----- Bootstrap 3: Scaffolding: Grid System  ----- *)
+let col col = a_class ["col-" ^ (string_of_int) (check col)]
+let col_sm col = a_class ["col-sm-" ^ (string_of_int) (check col)]
+let col_lg col = a_class ["col-lg-" ^ (string_of_int) (check col)]
+
+let col_offset col = a_class ["col-offset-" ^ (string_of_int) (check col)]
+let col_sm_offset col = a_class ["col-sm-offset-" ^ (string_of_int) (check col)]
+let col_lg_offset col = a_class ["col-lg-offset-" ^ (string_of_int) (check col)]
+
+let col_lg_pull col = a_class ["col-lg-pull-" ^ (string_of_int) (check col)]
+let col_lg_push col = a_class ["col-lg-push-" ^ (string_of_int) (check col)]
 
 (* ----- Scaffolding: Responsive Design ----- *)
 let visible_phone = a_class ["visible-phone"]
@@ -88,10 +100,12 @@ let controls = a_class ["controls"]
 let control_group = a_class ["control-group"]
 let control_label = a_class ["control_label"]
 
+let form_control = a_class ["form-control"]
 let form_search = a_class ["form-search"]
 let form_inline = a_class ["form-inline"]
 let form_horizontal = a_class ["form-horizontal"]
 let form_actions = a_class ["form-actions"]
+let form_group = a_class ["form-group"]
 
 let input_mini = a_class ["input-mini"]
 let input_small = a_class ["input-small"]
@@ -124,6 +138,7 @@ let btn = a_class ["btn"]
 let btn_small = a_class ["btn-small"]
 let btn_large = a_class ["btn-large"]
 
+let btn_default = a_class ["btn-default"]
 let btn_primary = a_class ["btn-primary"]
 let btn_info = a_class ["btn-info"]
 let btn_success = a_class ["btn-success"]
@@ -166,6 +181,7 @@ let tabs_right = a_class ["tabs-right"]
 
 (* ----- Components: Navbar ----- *)
 let navbar = a_class ["navbar"]
+let navbar_brand = a_class ["navbar-brand"]
 let navbar_inverse = ["navbar-inverse"]
 let navbar_inner = a_class ["navbar-inner"]
 let navbar_form = a_class ["navbar-form"]
