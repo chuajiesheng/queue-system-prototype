@@ -30,14 +30,14 @@ let hidden_string_input var value  =
     ~value:value ()
 
 let submit_button text = [
-  div ~a:[Bootstrap.col_lg_offset 4; Bootstrap.col_lg 8] [
+  div ~a:[Bootstrap.col_offset 4; Bootstrap.col_lg 8] [
     string_input ~a:[Bootstrap.btn; Bootstrap.btn_default] ~input_type:`Submit
       ~value:text ()]
 ]
 
 let login_box auth_service create_service =
   [div
-      ~a:[Bootstrap.form_horizontal; Bootstrap.col_lg_offset 3; Bootstrap.col_lg 6] [
+      ~a:[Bootstrap.form_horizontal; Bootstrap.col_offset 3; Bootstrap.col_lg 6] [
         post_form
           ~service:auth_service
           (fun (username, password) ->
@@ -52,6 +52,7 @@ let login_box auth_service create_service =
               [pcdata "Create an account"] ()]
       ]]
 
+(* TODO: to be implemented *)
 let sign_up_box sign_up_service =
   [post_form ~service:sign_up_service
       (fun (username, password) ->

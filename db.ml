@@ -27,7 +27,7 @@ let get_db : unit -> unit Lwt_PGOCaml.t Lwt.t =
   fun () ->
     match !db_handler with
     | Some h -> Lwt.return h
-    | None -> Lwt_PGOCaml.connect ~database:"onote" ()
+    | None -> Lwt_PGOCaml.connect ~database:"queue-system" ()
 
 (*
   create a seq as similar to postgresql
@@ -70,3 +70,20 @@ let queues = <:table< queues (
   user_id integer NOT NULL,
   datetime timestamp NOT NULL
 )>>
+
+(* users function *)
+let user_check email =
+  (get_db () >>= fun dbh ->
+  Lwt_Query.view dbh
+  <:view< {id = user_.id;
+           email = user_.email;
+           name = user_.name;
+           password = user_.password} |
+           user_ in $users$;
+           user_.email = $string:email$; >>)
+
+(* managers function *)
+
+(* providers function *)
+
+(* queues function *)
