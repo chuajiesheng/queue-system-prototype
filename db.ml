@@ -72,7 +72,7 @@ let queues = <:table< queues (
 )>>
 
 (* users function *)
-let user_check email =
+let user_check email pwd =
   (get_db () >>= fun dbh ->
   Lwt_Query.view dbh
   <:view< {id = user_.id;
@@ -80,7 +80,8 @@ let user_check email =
            name = user_.name;
            password = user_.password} |
            user_ in $users$;
-           user_.email = $string:email$; >>)
+           user_.email = $string:email$;
+           user_.password = $string:pwd$; >>)
 
 (* managers function *)
 
