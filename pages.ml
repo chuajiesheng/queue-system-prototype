@@ -39,7 +39,8 @@ let menu_page =
     | _ -> Lwt.return ([])) in
   lwt p = providers in
   let content =
-    [table
+    [div ~a:[Bootstrap.col_lg 6; Bootstrap.col_offset 3] [tablex
         ~a:[Bootstrap.table; Bootstrap.table_striped; Bootstrap.table_hover]
-        header p]  in
+        ~thead:(thead [header])
+        [tbody p]]]  in
   Document.create_page title content
