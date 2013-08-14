@@ -53,5 +53,5 @@ let () = Queue_prototype_app.register
 let () = Queue_prototype_app.register
   ~service:Services.menu_service
   (fun () () ->
-    Pages.home_page
+    Pages.menu_page
   )
