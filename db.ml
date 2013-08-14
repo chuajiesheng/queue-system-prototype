@@ -86,5 +86,12 @@ let user_check email pwd =
 (* managers function *)
 
 (* providers function *)
+let get_all_providers () =
+  (get_db () >>= fun dbh ->
+  Lwt_Query.view dbh
+  <:view< {id = provider_.id;
+           name = provider_.name;
+           slot = provider_.slot} |
+           provider_ in $providers$; >>)
 
 (* queues function *)
