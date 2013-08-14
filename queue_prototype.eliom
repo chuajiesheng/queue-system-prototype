@@ -3,6 +3,35 @@
   open Eliom_content
 }}
 
+{server{
+       class person id email name =
+       object
+         val id : int = id
+         val email : string = email
+         val name : string = name
+       end
+
+       class provider id name slot =
+         let queues =
+           let rec make_list slot =
+             match slot with
+             | 0 -> []
+             | s -> (Queue.create)::(make_list (s - 1)) in
+           let list = make_list slot in
+           Array.of_list list in
+       object
+         val id : int = id
+         val name : string = name
+         val queues : 'a array = queues
+         method add_to slot_no (person:person) =
+           Queue.add person (queues.(slot_no) ())
+       end
+
+       let initial_size = 2
+       let table : (string, provider) Hashtbl.t =
+         Hashtbl.create ~random:true initial_size
+}}
+
 module Queue_prototype_app =
   Eliom_registration.App (
     struct
