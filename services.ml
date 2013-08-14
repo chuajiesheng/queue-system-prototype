@@ -13,3 +13,7 @@ let sign_up_service =
 
 let menu_service =
   Eliom_service.service ~path:["menu"] ~get_params:Eliom_parameter.unit ()
+
+let provider_service =
+  Eliom_service.service
+    ~path:["provider"] ~get_params:Eliom_parameter.(suffix (string "provider")) ()
