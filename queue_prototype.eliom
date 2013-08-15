@@ -4,11 +4,16 @@
 }}
 
 {server{
-       class person id email name =
+       type message = (string * int * int)
+         deriving (Json)
+         (* message, calling queue no, estimated waiting time *)
+
+       class person id email name queue_no =
        object
          val id : int = id
          val email : string = email
          val name : string = name
+         val queue_no : int = queue_no
        end
 
        class provider id name slot =
