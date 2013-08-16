@@ -19,11 +19,13 @@ let menu_page =
   let process_provider id name slot =
     tr [td [pcdata id];
         td [pcdata name];
-        td [pcdata slot]] in
+        td [pcdata slot];
+        td [a Services.provider_service [pcdata "Info"] ("hello")]] in
   let header =
     tr [th [pcdata "#"];
         th [pcdata "Name"];
-        th [pcdata "Rooms"]] in
+        th [pcdata "Rooms"];
+        th [pcdata "Info"]] in
   let rec read_all p =
     match p with
     | head::tail ->
