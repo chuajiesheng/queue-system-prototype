@@ -20,7 +20,7 @@ let menu_page =
     tr [td [pcdata id];
         td [pcdata name];
         td [pcdata slot];
-        td [a Services.provider_service [pcdata "Info"] ("hello")]] in
+        td [a Services.provider_service [pcdata "Info"] (name)]] in
   let header =
     tr [th [pcdata "#"];
         th [pcdata "Name"];
