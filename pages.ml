@@ -37,8 +37,7 @@ let menu_page =
     | _ -> [] in
   let providers = Db.get_all_providers () >>=
     (function
-    | p -> Lwt.return (read_all p)
-    | _ -> Lwt.return ([])) in
+    | p -> Lwt.return (read_all p)) in
   lwt p = providers in
   let content =
     [div ~a:[Bootstrap.col_lg 6; Bootstrap.col_offset 3] [tablex
