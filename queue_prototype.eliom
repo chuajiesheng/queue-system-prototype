@@ -89,7 +89,7 @@ let () = Queue_prototype_app.register
 let () = Queue_prototype_app.register
   ~service:Services.menu_service
   (fun () () ->
-    Pages.menu_page
+    (Lazy.force Pages.menu_page)
   )
 
 let () = Queue_prototype_app.register

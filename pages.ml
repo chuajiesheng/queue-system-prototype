@@ -14,7 +14,7 @@ let login_page =
   let content = Forms.login_box Services.auth_service Services.sign_up_service in
   Document.create_page title content
 
-let menu_page =
+let menu_page = lazy begin
   let title = page_title "Provider List" in
   let process_provider id name slot =
     tr [td [pcdata id];
@@ -45,3 +45,4 @@ let menu_page =
         ~thead:(thead [header])
         [tbody p]]]  in
   Document.create_page title content
+end
