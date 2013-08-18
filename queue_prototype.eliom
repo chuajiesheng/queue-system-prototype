@@ -99,7 +99,7 @@ let () = Queue_prototype_app.register
 let () = Queue_prototype_app.register
   ~service:Services.provider_service
   (fun provider () ->
-    let provider = Str.global_replace (Str.regexp "[ ]") "_" provider in
+    (* let provider = Str.global_replace (Str.regexp "[ ]") "_" provider in *)
     let _ = Eliom_lib.debug "[provider_service] looking for %S" provider in
     Pages.login_page
   )
