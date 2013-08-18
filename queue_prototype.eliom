@@ -101,17 +101,37 @@ let () = Queue_prototype_app.register
   (fun provider () ->
     (* let provider = Str.global_replace (Str.regexp "[ ]") "_" provider in *)
     let _ = Eliom_lib.debug "[provider_service] looking for %S" provider in
-    let provider_obj =
+    let _ =
       try
-        Hashtbl.find table provider
+        let _ = Hashtbl.find table provider in
+        Lwt.return ()
       with Not_found ->
-        let obj = new provider 1 provider 2 in
-        let _ = Hashtbl.add table provider obj in
-        obj
+        let obj =
+          Db.get_provider provider >>=
+            (function
+            | res::_ ->
+              let id = Sql.get res#id in
+              let name = Sql.get res#name in
+              let slot = Sql.get res#slot in
+              let p = new provider (Int32.to_int id) name (Int32.to_int slot) in
+              Lwt.return (Some p)
+            | _ ->
+              Lwt.return None
+            ) in
+        obj >>=
+          (function
+          | Some (o) ->
+            Hashtbl.add table provider o;
+            Lwt.return ()
+          | None -> Lwt.return ())
     in
-    let _ = Eliom_lib.debug "[provider_service] hashtbl length %d"
-      (Hashtbl.length table) in
-    let _ = Eliom_lib.debug "[provider_service] array length %d"
-      (Array.length provider_obj#get_queues) in
-    Pages.provider_page provider_obj
+    try
+      let provider_obj = Hashtbl.find table provider in
+      let _ = Eliom_lib.debug "[provider_service] hashtbl length %d"
+        (Hashtbl.length table) in
+      let _ = Eliom_lib.debug "[provider_service] array length %d"
+        (Array.length provider_obj#get_queues) in
+      Pages.provider_page provider_obj
+    with Not_found ->
+      (Lazy.force Pages.menu_page)
   )
