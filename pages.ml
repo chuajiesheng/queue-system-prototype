@@ -46,3 +46,23 @@ let menu_page = lazy begin
         [tbody p]]]  in
   Document.create_page title content
 end
+
+let provider_page provider =
+  let title = page_title (provider#get_name) in
+  let content = [
+    div ~a:[Bootstrap.row] [div ~a:[Bootstrap.col_lg 6; Bootstrap.col_offset 3] [
+      h3 [pcdata provider#get_name]
+    ]];
+    div ~a:[Bootstrap.row] [div ~a:[Bootstrap.col_lg 6; Bootstrap.col_offset 3] [
+      dl ~a:[Bootstrap.dl_horizontal]
+        [((dt [pcdata "# Waiting Customer"], []), (dd [pcdata "1"], []));
+         ((dt [pcdata "Est Waiting Time"], []), (dd [pcdata "10min"], []))]
+    ]];
+    div ~a:[Bootstrap.row] [div ~a:[Bootstrap.col_lg 6; Bootstrap.col_offset 3] [
+      button ~a:[Bootstrap.btn; Bootstrap.btn_default;
+                 Bootstrap.btn_lg; Bootstrap.btn_block]
+        ~button_type:`Button [pcdata "Get Queue"]
+    ]]
+  ]
+  in
+  Document.create_page title content

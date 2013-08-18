@@ -101,5 +101,17 @@ let () = Queue_prototype_app.register
   (fun provider () ->
     (* let provider = Str.global_replace (Str.regexp "[ ]") "_" provider in *)
     let _ = Eliom_lib.debug "[provider_service] looking for %S" provider in
-    Pages.login_page
+    let provider_obj =
+      try
+        Hashtbl.find table provider
+      with Not_found ->
+        let obj = new provider 1 provider 2 in
+        let _ = Hashtbl.add table provider obj in
+        obj
+    in
+    let _ = Eliom_lib.debug "[provider_service] hashtbl length %d"
+      (Hashtbl.length table) in
+    let _ = Eliom_lib.debug "[provider_service] array length %d"
+      (Array.length provider_obj#get_queues) in
+    Pages.provider_page provider_obj
   )
