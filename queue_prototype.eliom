@@ -30,6 +30,10 @@
          val queues : 'a array = queues
          val bus : message Eliom_bus.t = Eliom_bus.create Json.t<message>
            (* each provider have a specific bus where client would listen on *)
+         method get_id = id
+         method get_name = name
+         method get_queues = queues
+         method get_bus = bus
          method add_to slot_no (person : person) =
            Queue.add person (queues.(slot_no) ())
        end
