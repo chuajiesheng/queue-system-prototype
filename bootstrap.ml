@@ -71,7 +71,7 @@ let initialism = a_class ["initialism"]
 
 let unstyled = a_class ["unstyled"]
 let inline = a_class ["inline"]
-let dl_horizontal = a_class ["dl_horizontal"]
+let dl_horizontal = a_class ["dl-horizontal"]
 
 (* ----- Base CSS: Code ----- *)
 let pre_scrollable = a_class ["pre-scrollable"]
@@ -137,6 +137,9 @@ let btn_mini = a_class ["btn-mini"]
 let btn = a_class ["btn"]
 let btn_small = a_class ["btn-small"]
 let btn_large = a_class ["btn-large"]
+let btn_xs = a_class ["btn-xs"]
+let btn_sm = a_class ["btn-sm"]
+let btn_lg = a_class ["btn-lg"]
 
 let btn_default = a_class ["btn-default"]
 let btn_primary = a_class ["btn-primary"]
