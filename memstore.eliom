@@ -12,6 +12,8 @@ object
   val id : int = id
   val email : string = email
   val name : string = name
+  method get_id = id
+  method get_email = email
   method get_name = name
 end
 
