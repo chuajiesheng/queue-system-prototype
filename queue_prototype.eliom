@@ -99,39 +99,35 @@ let () = Queue_prototype_app.register
 let () = Queue_prototype_app.register
   ~service:Services.provider_service
   (fun provider () ->
-    (* let provider = Str.global_replace (Str.regexp "[ ]") "_" provider in *)
     let _ = Eliom_lib.debug "[provider_service] looking for %S" provider in
-    let _ =
+    let obj =
       try
-        let _ = Hashtbl.find table provider in
-        Lwt.return ()
+        let p = Hashtbl.find table provider in
+        Lwt.return (Some (p))
       with Not_found ->
-        let obj =
-          Db.get_provider provider >>=
-            (function
-            | res::_ ->
-              let id = Sql.get res#id in
-              let name = Sql.get res#name in
-              let slot = Sql.get res#slot in
-              let p = new provider (Int32.to_int id) name (Int32.to_int slot) in
-              Lwt.return (Some p)
-            | _ ->
-              Lwt.return None
-            ) in
-        obj >>=
+        let _ = Eliom_lib.debug "[provider_service] provider not in hashtable" in
+        Db.get_provider provider >>=
           (function
-          | Some (o) ->
-            Hashtbl.add table provider o;
-            Lwt.return ()
-          | None -> Lwt.return ())
+          | res::_ ->
+            let id = Sql.get res#id in
+            let name = Sql.get res#name in
+            let slot = Sql.get res#slot in
+            let p = new provider (Int32.to_int id) name (Int32.to_int slot) in
+            Hashtbl.add table provider p;
+            let _ = Eliom_lib.debug "[provider_service] created new provider" in
+            Lwt.return (Some(p))
+          | _ ->
+            Lwt.return (None)
+          )
     in
-    try
-      let provider_obj = Hashtbl.find table provider in
-      let _ = Eliom_lib.debug "[provider_service] hashtbl length %d"
-        (Hashtbl.length table) in
-      let _ = Eliom_lib.debug "[provider_service] array length %d"
-        (Array.length provider_obj#get_queues) in
-      Pages.provider_page provider_obj
-    with Not_found ->
-      (Lazy.force Pages.menu_page)
+    obj >>=
+      (function
+      | Some (provider_obj) ->
+        let _ = Eliom_lib.debug "[provider_service] hashtbl length %d"
+          (Hashtbl.length table) in
+        let _ = Eliom_lib.debug "[provider_service] array length %d"
+          (Array.length provider_obj#get_queues) in
+        Pages.provider_page provider_obj
+      | None ->
+        (Lazy.force Pages.menu_page))
   )
