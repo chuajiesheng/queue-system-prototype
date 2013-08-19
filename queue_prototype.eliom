@@ -38,7 +38,7 @@
            Queue.add person (queues.(slot_no) ())
        end
 
-       let initial_size = 2 (* TODO: retrieve value from database *)
+       let initial_size = 2
        let table : (string, provider) Hashtbl.t =
          Hashtbl.create ~random:true initial_size
 }}
