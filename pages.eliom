@@ -47,8 +47,11 @@ let menu_page = lazy begin
   Document.create_page title content
 end
 
-let provider_page provider =
+let provider_page provider person =
   let title = page_title (provider#get_name) in
+  let person_id = person#get_id in
+  let person_email = person#get_email in
+  let person_name = person#get_name in
   let button =
     button ~a:[Bootstrap.btn; Bootstrap.btn_default;
                Bootstrap.btn_lg; Bootstrap.btn_block]
@@ -58,7 +61,9 @@ let provider_page provider =
       async (fun () ->
         clicks (Eliom_content.Html5.To_dom.of_element %button)
           (fun _ _ ->
-            let _ = Lwt.bind (%Memstore.rpc_get_queue (1, "hello", "world")) in
+            let _ = Lwt.bind
+              (%Memstore.rpc_get_queue
+                  (%person_id, %person_email, %person_name)) in
             Lwt.return ())
       )) }} in
   let content = [

@@ -1,12 +1,12 @@
-let _email =
+let _person =
   Eliom_reference.eref
     ~scope:Eliom_common.default_session_scope None
 
-let get_email () =
-  Eliom_reference.get _email
+let get_person () =
+  Eliom_reference.get _person
 
-let set_email (email : string) =
-  Eliom_reference.set _email (Some (email))
+let set_person (p : Memstore.person) =
+  Eliom_reference.set _person (Some (p))
 
 let _manager =
   Eliom_reference.eref

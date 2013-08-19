@@ -28,7 +28,9 @@ let () = Eliom_registration.Redirection.register
     Db.user_check (String.escaped username) (Util.tohex (hash password)) >>=
       (function
       | res::_ ->
+        let id = Int32.to_int (Sql.get res#id) in
         let email = Sql.get res#email in
+        let name = Sql.get res#name in
         let _ = Eliom_lib.debug
           "[auth_service] compare hex %s %s"
           (Util.tohex (hash password))
@@ -37,7 +39,7 @@ let () = Eliom_registration.Redirection.register
           "[auth_service] compare %s %s"
           (hash password)
           (Util.hex (Sql.get res#password)) in
-        let _ = Session.set_email email in
+        let _ = Session.set_person (new Memstore.person id email name) in
         let _ = Eliom_lib.debug "[auth_service] %s authenticated" email in
         Lwt.return Services.menu_service
       | _ ->
@@ -60,7 +62,7 @@ let () = Queue_prototype_app.register
   ~service:Services.provider_service
   (fun provider () ->
     let _ = Eliom_lib.debug "[provider_service] looking for %s" provider in
-    let obj =
+    lwt obj =
       try
         let p = Hashtbl.find Memstore.table provider in
         Lwt.return (Some (p))
@@ -80,14 +82,8 @@ let () = Queue_prototype_app.register
             Lwt.return (None)
           )
     in
-    obj >>=
-      (function
-      | Some (provider_obj) ->
-        let _ = Eliom_lib.debug "[provider_service] hashtbl length %d"
-          (Hashtbl.length Memstore.table) in
-        let _ = Eliom_lib.debug "[provider_service] array length %d"
-          (Array.length provider_obj#get_queues) in
-        Pages.provider_page provider_obj
-      | None ->
-        (Lazy.force Pages.menu_page))
+    lwt person = Session.get_person () in
+    match (obj, person) with
+    | (Some(o), Some(p)) -> Pages.provider_page o p
+    | _, _ -> (Lazy.force Pages.menu_page)
   )
