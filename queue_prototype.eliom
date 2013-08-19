@@ -3,46 +3,6 @@
   open Eliom_content
 }}
 
-{server{
-       type message = (string * int * int)
-         deriving (Json)
-         (* message, calling queue no, estimated waiting time *)
-
-       class person id email name queue_no =
-       object
-         val id : int = id
-         val email : string = email
-         val name : string = name
-         val queue_no : int = queue_no
-       end
-
-       class provider id name slot =
-         let queues =
-           let rec make_list slot =
-             match slot with
-             | 0 -> []
-             | s -> (Queue.create)::(make_list (s - 1)) in
-           let list = make_list slot in
-           Array.of_list list in
-       object
-         val id : int = id
-         val name : string = name
-         val queues : 'a array = queues
-         val bus : message Eliom_bus.t = Eliom_bus.create Json.t<message>
-           (* each provider have a specific bus where client would listen on *)
-         method get_id = id
-         method get_name = name
-         method get_queues = queues
-         method get_bus = bus
-         method add_to slot_no (person : person) =
-           Queue.add person (queues.(slot_no) ())
-       end
-
-       let initial_size = 2
-       let table : (string, provider) Hashtbl.t =
-         Hashtbl.create ~random:true initial_size
-}}
-
 module Queue_prototype_app =
   Eliom_registration.App (
     struct
@@ -70,15 +30,15 @@ let () = Eliom_registration.Redirection.register
       | res::_ ->
         let email = Sql.get res#email in
         let _ = Eliom_lib.debug
-          "[auth_service] compare hex %S %S"
+          "[auth_service] compare hex %s %s"
           (Util.tohex (hash password))
           (Sql.get res#password) in
         let _ = Eliom_lib.debug
-          "[auth_service] compare %S %S"
+          "[auth_service] compare %s %s"
           (hash password)
           (Util.hex (Sql.get res#password)) in
         let _ = Session.set_email email in
-        let _ = Eliom_lib.debug "[auth_service] %S authenticated" email in
+        let _ = Eliom_lib.debug "[auth_service] %s authenticated" email in
         Lwt.return Services.menu_service
       | _ ->
         Lwt.return Services.login_service
@@ -99,10 +59,10 @@ let () = Queue_prototype_app.register
 let () = Queue_prototype_app.register
   ~service:Services.provider_service
   (fun provider () ->
-    let _ = Eliom_lib.debug "[provider_service] looking for %S" provider in
+    let _ = Eliom_lib.debug "[provider_service] looking for %s" provider in
     let obj =
       try
-        let p = Hashtbl.find table provider in
+        let p = Hashtbl.find Memstore.table provider in
         Lwt.return (Some (p))
       with Not_found ->
         let _ = Eliom_lib.debug "[provider_service] provider not in hashtable" in
@@ -112,8 +72,8 @@ let () = Queue_prototype_app.register
             let id = Sql.get res#id in
             let name = Sql.get res#name in
             let slot = Sql.get res#slot in
-            let p = new provider (Int32.to_int id) name (Int32.to_int slot) in
-            Hashtbl.add table provider p;
+            let p = new Memstore.provider (Int32.to_int id) name (Int32.to_int slot) in
+            Hashtbl.add Memstore.table provider p;
             let _ = Eliom_lib.debug "[provider_service] created new provider" in
             Lwt.return (Some(p))
           | _ ->
@@ -124,7 +84,7 @@ let () = Queue_prototype_app.register
       (function
       | Some (provider_obj) ->
         let _ = Eliom_lib.debug "[provider_service] hashtbl length %d"
-          (Hashtbl.length table) in
+          (Hashtbl.length Memstore.table) in
         let _ = Eliom_lib.debug "[provider_service] array length %d"
           (Array.length provider_obj#get_queues) in
         Pages.provider_page provider_obj

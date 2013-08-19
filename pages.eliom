@@ -49,6 +49,18 @@ end
 
 let provider_page provider =
   let title = page_title (provider#get_name) in
+  let button =
+    button ~a:[Bootstrap.btn; Bootstrap.btn_default;
+               Bootstrap.btn_lg; Bootstrap.btn_block]
+      ~button_type:`Button [pcdata "Get Queue"] in
+  let _ = {unit{
+    Lwt_js_events.(
+      async (fun () ->
+        clicks (Eliom_content.Html5.To_dom.of_element %button)
+          (fun _ _ ->
+            let _ = Lwt.bind (%Memstore.rpc_get_queue (1, "hello", "world")) in
+            Lwt.return ())
+      )) }} in
   let content = [
     div ~a:[Bootstrap.row] [div ~a:[Bootstrap.col_lg 6; Bootstrap.col_offset 3] [
       h3 [pcdata provider#get_name]
@@ -59,9 +71,7 @@ let provider_page provider =
          ((dt [pcdata "Est Waiting Time"], []), (dd [pcdata "10min"], []))]
     ]];
     div ~a:[Bootstrap.row] [div ~a:[Bootstrap.col_lg 6; Bootstrap.col_offset 3] [
-      button ~a:[Bootstrap.btn; Bootstrap.btn_default;
-                 Bootstrap.btn_lg; Bootstrap.btn_block]
-        ~button_type:`Button [pcdata "Get Queue"]
+      button
     ]]
   ]
   in
