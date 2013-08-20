@@ -47,8 +47,11 @@ let menu_page = lazy begin
   Document.create_page title content
 end
 
-let provider_page provider person =
+let provider_page (provider : Memstore.provider)  person =
   let title = page_title (provider#get_name) in
+  let provider_queue = (Array.get (provider#get_queues) 0) () in
+  let queue_length = Queue.length provider_queue in
+  let estimated_waiting_time = queue_length * Constant.estimated_serving_time in
   let person_id = person#get_id in
   let person_email = person#get_email in
   let person_name = person#get_name in
@@ -72,8 +75,10 @@ let provider_page provider person =
     ]];
     div ~a:[Bootstrap.row] [div ~a:[Bootstrap.col_lg 6; Bootstrap.col_offset 3] [
       dl ~a:[Bootstrap.dl_horizontal]
-        [((dt [pcdata "# Waiting Customer"], []), (dd [pcdata "1"], []));
-         ((dt [pcdata "Est Waiting Time"], []), (dd [pcdata "10min"], []))]
+        [((dt [pcdata "# Waiting Customer"], []),
+          (dd [pcdata (string_of_int queue_length)], []));
+         ((dt [pcdata "Est Waiting Time"], []),
+          (dd [pcdata (string_of_int estimated_waiting_time); pcdata "min"], []))]
     ]];
     div ~a:[Bootstrap.row] [div ~a:[Bootstrap.col_lg 6; Bootstrap.col_offset 3] [
       button
