@@ -48,6 +48,11 @@ let () = Eliom_registration.Redirection.register
       ))
 
 let () = Queue_prototype_app.register
+  ~service:Services.oauth_service
+  (fun () (email, (name, id)) ->
+    (Lazy.force Pages.menu_page))
+
+let () = Queue_prototype_app.register
   ~service:Services.sign_up_service
   (fun () () ->
     Pages.login_page

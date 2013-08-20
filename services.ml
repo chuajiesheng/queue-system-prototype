@@ -8,6 +8,10 @@ let auth_service =
   Eliom_service.post_coservice'
     ~post_params:Eliom_parameter.(string "username" ** string "password") ()
 
+let oauth_service =
+  Eliom_service.post_coservice'
+    ~post_params:Eliom_parameter.(string "email" ** (string "name" ** string "id")) ()
+
 let sign_up_service =
   Eliom_service.service ~path:["signup"] ~get_params:Eliom_parameter.unit ()
 

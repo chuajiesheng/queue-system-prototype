@@ -11,7 +11,7 @@ let home_page =
 
 let login_page =
   let title = page_title "Login" in
-  let content = Forms.login_box Services.auth_service Services.sign_up_service in
+  let content = Forms.login_box Services.auth_service Services.oauth_service Services.sign_up_service in
   Document.create_page title content
 
 let menu_page = lazy begin
