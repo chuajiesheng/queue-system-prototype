@@ -49,11 +49,15 @@ let oauth_button_action = {{
 
     let process_api_response resp =
       (* the request callback to this function, supplying the resp *)
-      Firebug.console##log(Js.string "process api request response");
-      Firebug.console##log_2(Js.string "[id]", resp##id);
-      Firebug.console##log_2(Js.string "[email]", resp##email);
-      Firebug.console##log_2(Js.string "[name]", resp##name);
-      ignore(Js._true)
+      let id = resp##id in
+      let email = resp##email in
+      let name = resp##name in
+      let _ = Firebug.console##log(Js.string "process api request response") in
+      let _ = Firebug.console##log_2(Js.string "[id]", resp##id) in
+      let _ = Firebug.console##log_2(Js.string "[email]", resp##email) in
+      let _ = Firebug.console##log_2(Js.string "[name]", resp##name) in
+      ignore (Eliom_client.change_page
+                 ~service:%Services.oauth_service () (email, (name, id)))
     in
 
     let make_api_call () =
