@@ -86,5 +86,6 @@ let () = Queue_prototype_app.register
     lwt person = Session.get_person () in
     match (obj, person) with
     | (Some(o), Some(p)) -> Pages.provider_page o p
-    | _, _ -> (Lazy.force Pages.menu_page)
+    | None, Some(p) -> (Lazy.force Pages.menu_page)
+    | _, _ -> Pages.login_page
   )
