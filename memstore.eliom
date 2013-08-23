@@ -18,25 +18,23 @@ object
 end
 
 class provider id name  =
-  let queues =
-    let make_list = (Queue.create)::(Queue.create)::[] in
-    let list = make_list in
-    Array.of_list list in
+  let main_queue = Queue.create () in
+  let arrived_queue = Queue.create () in
 object
   val id : int = id
   val name : string = name
-  val queues : 'a array = queues
+  val main_queue : person Queue.t = main_queue
+  val arrived_queue : person Queue.t = arrived_queue
   val bus : message Eliom_bus.t = Eliom_bus.create Json.t<message>
   (* each provider have a specific bus where client would listen on *)
   method get_id = id
   method get_name = name
-  method get_queues = queues
+  method get_main_queue = main_queue
+  method get_arrived_queue = arrived_queue
   method get_bus = bus
-  method add_to slot_no (person : person) =
-    let q = (Array.get queues slot_no) () in
-    let _ = Queue.add person q in
-    let _ = Eliom_lib.debug "[provider] new queue length: %d" (Queue.length q) in
-    Array.set queues slot_no (fun () -> q)
+  method add_to (person : person) =
+    let _ = Queue.add person main_queue in
+    Eliom_lib.debug "[provider] new queue length: %d" (Queue.length main_queue)
 end
 
 let initial_size = 2
@@ -53,9 +51,9 @@ let rpc_get_queue =
         try
           let provider = Hashtbl.find table provider_name in
           let _ = Eliom_lib.debug "[rpc_get_queue] found provider %s" provider#get_name in
-          let _ = provider#add_to 0 person in
+          let _ = provider#add_to person in
           let _ = Eliom_lib.debug "[rpc_get_queue] queue length: %d"
-            (Queue.length ((Array.get (provider#get_queues) 0) ())) in
+            (Queue.length (provider#get_main_queue)) in
           ()
         with Not_found ->
           ()
