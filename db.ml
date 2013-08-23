@@ -58,8 +58,7 @@ let providers_id_seq = <:sequence< serial "providers_id_seq">>
 
 let providers = <:table< providers (
   id integer NOT NULL DEFAULT(nextval $providers_id_seq$),
-  name text NOT NULL,
-  slot integer NOT NULL
+  name text NOT NULL
 )>>
 
 let queues_id_seq = <:sequence< serial "queues_id_seq">>
@@ -68,7 +67,9 @@ let queues = <:table< queues (
   id integer NOT NULL DEFAULT(nextval $queues_id_seq$),
   provider_id integer NOT NULL,
   user_id integer NOT NULL,
-  datetime timestamp NOT NULL
+  datetime timestamp NOT NULL,
+  datetime_arrived timestamp NULL,
+  datetime_called timestamp NULL
 )>>
 
 (* users function *)
@@ -90,16 +91,14 @@ let get_all_providers () =
   (get_db () >>= fun dbh ->
   Lwt_Query.view dbh
   <:view< {id = provider_.id;
-           name = provider_.name;
-           slot = provider_.slot} |
+           name = provider_.name} |
            provider_ in $providers$; >>)
 
 let get_provider name =
   (get_db () >>= fun dbh ->
    Lwt_Query.view dbh
    <:view< {id = provider_.id;
-            name = provider_.name;
-            slot = provider_.slot} |
+            name = provider_.name} |
             provider_ in $providers$;
             provider_.name = $string:name$; >>)
 

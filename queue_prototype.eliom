@@ -82,8 +82,7 @@ let () = Queue_prototype_app.register
           | res::_ ->
             let id = Sql.get res#id in
             let name = Sql.get res#name in
-            let slot = Sql.get res#slot in
-            let p = new Memstore.provider (Int32.to_int id) name (Int32.to_int slot) in
+            let p = new Memstore.provider (Int32.to_int id) name in
             Hashtbl.add Memstore.table provider p;
             let _ = Eliom_lib.debug "[provider_service] created new provider" in
             Lwt.return (Some(p))

@@ -18,15 +18,13 @@ let login_page =
 
 let menu_page = lazy begin
   let title = page_title "Provider List" in
-  let process_provider id name slot =
+  let process_provider id name  =
     tr [td [pcdata id];
         td [pcdata name];
-        td [pcdata slot];
         td [a Services.provider_service [pcdata "Info"] (name)]] in
   let header =
     tr [th [pcdata "#"];
         th [pcdata "Name"];
-        th [pcdata "Rooms"];
         th [pcdata "Info"]] in
   let rec read_all p =
     match p with
@@ -34,8 +32,7 @@ let menu_page = lazy begin
       let previous = read_all tail in
       let id = Int32.to_string (Sql.get head#id) in
       let name = Sql.get head#name in
-      let slot = Int32.to_string (Sql.get head#slot) in
-      (process_provider id name slot)::previous
+      (process_provider id name)::previous
     | _ -> [] in
   let providers = Db.get_all_providers () >>=
     (function

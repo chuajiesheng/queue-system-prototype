@@ -17,13 +17,10 @@ object
   method get_name = name
 end
 
-class provider id name slot =
+class provider id name  =
   let queues =
-    let rec make_list slot =
-      match slot with
-      | 0 -> []
-      | s -> (Queue.create)::(make_list (s - 1)) in
-    let list = make_list slot in
+    let make_list = (Queue.create)::(Queue.create)::[] in
+    let list = make_list in
     Array.of_list list in
 object
   val id : int = id
@@ -36,7 +33,7 @@ object
   method get_queues = queues
   method get_bus = bus
   method add_to slot_no (person : person) =
-    let _ = (Array.get queues slot_no) () in
+    let q = (Array.get queues slot_no) () in
     let _ = Queue.add person q in
     let _ = Eliom_lib.debug "[provider] new queue length: %d" (Queue.length q) in
     Array.set queues slot_no (fun () -> q)
@@ -56,7 +53,7 @@ let rpc_get_queue =
         try
           let provider = Hashtbl.find table provider_name in
           let _ = Eliom_lib.debug "[rpc_get_queue] found provider %s" provider#get_name in
-          let q = provider#add_to 0 person in
+          let _ = provider#add_to 0 person in
           let _ = Eliom_lib.debug "[rpc_get_queue] queue length: %d"
             (Queue.length ((Array.get (provider#get_queues) 0) ())) in
           ()
