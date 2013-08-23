@@ -1,5 +1,5 @@
 {shared{
-       type json_person = (int * string * string)
+       type json_queue_person = (string * int * string * string)
          deriving (Json)
 
        type message = (string * int * int)
@@ -36,7 +36,10 @@ object
   method get_queues = queues
   method get_bus = bus
   method add_to slot_no (person : person) =
-    Queue.add person (queues.(slot_no) ())
+    let _ = (Array.get queues slot_no) () in
+    let _ = Queue.add person q in
+    let _ = Eliom_lib.debug "[provider] new queue length: %d" (Queue.length q) in
+    Array.set queues slot_no (fun () -> q)
 end
 
 let initial_size = 2
@@ -45,8 +48,20 @@ let table : (string, provider) Hashtbl.t =
 
 (* ----- rpc server function ----- *)
 let rpc_get_queue =
-  server_function Json.t<json_person>
-    (fun (id, name, email) ->
+  server_function Json.t<json_queue_person>
+    (fun (provider_name, id, email, name) ->
       let _ = Eliom_lib.debug "[rpc_get_queue] person %s (%s)" name email in
+      let person = new person id email name in
+      let _ =
+        try
+          let provider = Hashtbl.find table provider_name in
+          let _ = Eliom_lib.debug "[rpc_get_queue] found provider %s" provider#get_name in
+          let q = provider#add_to 0 person in
+          let _ = Eliom_lib.debug "[rpc_get_queue] queue length: %d"
+            (Queue.length ((Array.get (provider#get_queues) 0) ())) in
+          ()
+        with Not_found ->
+          ()
+      in
       Lwt.return ()
     )

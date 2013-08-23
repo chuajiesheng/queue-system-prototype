@@ -49,11 +49,12 @@ let menu_page = lazy begin
   Document.create_page title content
 end
 
-let provider_page (provider : Memstore.provider)  person =
+let provider_page (provider : Memstore.provider) person =
   let title = page_title (provider#get_name) in
   let provider_queue = (Array.get (provider#get_queues) 0) () in
   let queue_length = Queue.length provider_queue in
   let estimated_waiting_time = queue_length * Constant.estimated_serving_time in
+  let provider_name = provider#get_name in
   let person_id = person#get_id in
   let person_email = person#get_email in
   let person_name = person#get_name in
@@ -68,7 +69,9 @@ let provider_page (provider : Memstore.provider)  person =
           (fun _ _ ->
             let _ = Lwt.bind
               (%Memstore.rpc_get_queue
-                  (%person_id, %person_email, %person_name)) in
+                  (%provider_name, %person_id, %person_email, %person_name)) in
+            let _ = Eliom_client.change_page
+              ~service:%Services.provider_service %provider_name () in
             Lwt.return ())
       )) }} in
   let content = [
