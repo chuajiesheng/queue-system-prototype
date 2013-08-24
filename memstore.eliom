@@ -54,12 +54,20 @@ object (self)
         let last_queue_no = self#get_last_queue_no in
         let q_person = new queue_person person (last_queue_no + 1) in
         let _ = main_queue <- main_queue@[q_person] in
-        Eliom_lib.debug "[provider] new queue person: %d, %s"
+        Eliom_lib.debug "[provider] new queue person: #%d, %s"
           (last_queue_no + 1) q_person#get_name
       | _ -> ()
     in
     Eliom_lib.debug "[provider] new queue length: %d"
       ((List.length main_queue) + (List.length arrived_queue))
+  method check_if_exist (person : person) =
+    let check_duplication person init person2 =
+      if person#get_id == person2#get_id then person2#get_queue_no
+      else 0
+    in
+    let queue_no =
+      List.fold_left (check_duplication person) 0 (main_queue@arrived_queue) in
+    queue_no
 end
 
 let initial_size = 2

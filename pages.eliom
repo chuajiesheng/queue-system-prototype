@@ -56,9 +56,18 @@ let provider_page (provider : Memstore.provider) person =
   let person_email = person#get_email in
   let person_name = person#get_name in
   let button =
-    button ~a:[Bootstrap.btn; Bootstrap.btn_default;
-               Bootstrap.btn_lg; Bootstrap.btn_block]
-      ~button_type:`Button [pcdata "Get Queue"] in
+    let queue_no = provider#check_if_exist person in
+    if queue_no == 0 then
+      button ~a:[Bootstrap.btn; Bootstrap.btn_default;
+                 Bootstrap.btn_lg; Bootstrap.btn_block]
+        ~button_type:`Button [pcdata "Get Queue"]
+    else
+      button ~a:[Bootstrap.btn; Bootstrap.btn_default;
+                 Bootstrap.btn_lg; Bootstrap.btn_block;
+                 Bootstrap.disabled]
+        ~button_type:`Button [pcdata "Your Queue No: ";
+                              pcdata (string_of_int queue_no)]
+  in
   let _ = {unit{
     Lwt_js_events.(
       async (fun () ->
