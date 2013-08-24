@@ -25,13 +25,13 @@ object
 end
 
 class provider id name  =
-  let main_queue = Queue.create () in
-  let arrived_queue = Queue.create () in
+  let main_queue = [] in
+  let arrived_queue = [] in
 object (self)
   val id : int = id
   val name : string = name
-  val main_queue : queue_person Queue.t = main_queue
-  val arrived_queue : queue_person Queue.t = arrived_queue
+  val mutable main_queue : queue_person list = main_queue
+  val mutable arrived_queue : queue_person list = arrived_queue
   val bus : message Eliom_bus.t = Eliom_bus.create Json.t<message>
   (* each provider have a specific bus where client would listen on *)
   method get_id = id
@@ -43,22 +43,23 @@ object (self)
     let last init person =
       if person#get_queue_no > init then person#get_queue_no
       else init in
-    Queue.fold last 0 main_queue
+    List.fold_left last 0 main_queue
   method add_to (person : person) =
     let check_duplicate person init person2 =
       init || person#get_id == person2#get_id
     in
-    let exist = Queue.fold (check_duplicate person) false main_queue in
+    let exist = List.fold_left (check_duplicate person) false main_queue in
     let _ = match exist with
       | false ->
         let last_queue_no = self#get_last_queue_no in
         let q_person = new queue_person person (last_queue_no + 1) in
-        let _ = Queue.add q_person main_queue in
+        let _ = main_queue <- main_queue@[q_person] in
         Eliom_lib.debug "[provider] new queue person: %d, %s"
           (last_queue_no + 1) q_person#get_name
       | _ -> ()
     in
-    Eliom_lib.debug "[provider] new queue length: %d" (Queue.length main_queue)
+    Eliom_lib.debug "[provider] new queue length: %d"
+      ((List.length main_queue) + (List.length arrived_queue))
 end
 
 let initial_size = 2
@@ -77,7 +78,8 @@ let rpc_get_queue =
           let _ = Eliom_lib.debug "[rpc_get_queue] found provider %s" provider#get_name in
           let _ = provider#add_to person in
           let _ = Eliom_lib.debug "[rpc_get_queue] queue length: %d"
-            (Queue.length (provider#get_main_queue)) in
+            ((List.length (provider#get_main_queue)) +
+                List.length (provider#get_arrived_queue)) in
           ()
         with Not_found ->
           ()

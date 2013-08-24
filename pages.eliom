@@ -48,7 +48,8 @@ end
 
 let provider_page (provider : Memstore.provider) person =
   let title = page_title (provider#get_name) in
-  let queue_length = Queue.length provider#get_arrived_queue in
+  let queue_length = (List.length provider#get_main_queue) +
+    (List.length provider#get_arrived_queue) in
   let estimated_waiting_time = queue_length * Constant.estimated_serving_time in
   let provider_name = provider#get_name in
   let person_id = person#get_id in
