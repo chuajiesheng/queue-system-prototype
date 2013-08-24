@@ -33,7 +33,14 @@ object
   method get_arrived_queue = arrived_queue
   method get_bus = bus
   method add_to (person : person) =
-    let _ = Queue.add person main_queue in
+    let check_duplicate person init person2 =
+      init || person#get_id == person2#get_id
+    in
+    let exist = Queue.fold (check_duplicate person) false main_queue in
+    let _ = match exist with
+      | false -> Queue.add person main_queue
+      | _ -> ()
+    in
     Eliom_lib.debug "[provider] new queue length: %d" (Queue.length main_queue)
 end
 
