@@ -43,7 +43,7 @@ object (self)
     let last init person =
       if person#get_queue_no > init then person#get_queue_no
       else init in
-    List.fold_left last 0 main_queue
+    List.fold_left last Constant.starting_queue_no main_queue
   method add_to (person : person) =
     let check_duplicate person init person2 =
       init || person#get_id == person2#get_id
@@ -62,11 +62,15 @@ object (self)
       ((List.length main_queue) + (List.length arrived_queue))
   method check_if_exist (person : person) =
     let check_duplication person init person2 =
+      let _ = Eliom_lib.debug "[check_duplication] checking id %d and %d"
+        person#get_id person2#get_id in
       if person#get_id == person2#get_id then person2#get_queue_no
-      else 0
+      else init
     in
     let queue_no =
-      List.fold_left (check_duplication person) 0 (main_queue@arrived_queue) in
+      List.fold_left (check_duplication person)
+        Constant.starting_queue_no (main_queue@arrived_queue)
+    in
     queue_no
 end
 

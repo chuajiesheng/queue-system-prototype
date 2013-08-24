@@ -57,7 +57,7 @@ let provider_page (provider : Memstore.provider) person =
   let person_name = person#get_name in
   let button =
     let queue_no = provider#check_if_exist person in
-    if queue_no == 0 then
+    if queue_no <= Constant.starting_queue_no then
       button ~a:[Bootstrap.btn; Bootstrap.btn_default;
                  Bootstrap.btn_lg; Bootstrap.btn_block]
         ~button_type:`Button [pcdata "Get Queue"]
