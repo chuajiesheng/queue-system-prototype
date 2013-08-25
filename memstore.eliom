@@ -17,6 +17,18 @@ object
   method get_name = name
 end
 
+class manager id username name provider_id =
+object
+  val id : int = id
+  val username : string = username
+  val name : string = name
+  val provider_id : int = provider_id
+  method get_id = id
+  method get_username = username
+  method get_name = name
+  method get_provider_id = provider_id
+end
+
 class queue_person person queue_no =
 object
   inherit person person#get_id person#get_email person#get_name

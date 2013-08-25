@@ -21,3 +21,7 @@ let menu_service =
 let provider_service =
   Eliom_service.service
     ~path:["provider"] ~get_params:Eliom_parameter.(suffix (string "provider")) ()
+
+let manager_service =
+  Eliom_service.service
+    ~path:["manager"] ~get_params:Eliom_parameter.(suffix (string "manager")) ()

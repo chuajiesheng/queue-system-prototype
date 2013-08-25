@@ -15,5 +15,5 @@ let _manager =
 let get_manager () =
   Eliom_reference.get _manager
 
-let set_manager (manager : string) =
+let set_manager (manager : Memstore.manager) =
   Eliom_reference.set _manager (Some (manager))

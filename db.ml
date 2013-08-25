@@ -45,21 +45,22 @@ let users = <:table< users (
   password text NOT NULL
 ) >>
 
-let managers_id_seq = <:sequence< serial "managers_id_seq">>
-
-let managers = <:table< managers (
-  id integer NOT NULL DEFAULT(nextval $managers_id_seq$),
-  username text NOT NULL,
-  name text NOT NULL,
-  password text NOT NULL
-) >>
-
 let providers_id_seq = <:sequence< serial "providers_id_seq">>
 
 let providers = <:table< providers (
   id integer NOT NULL DEFAULT(nextval $providers_id_seq$),
   name text NOT NULL
 )>>
+
+let managers_id_seq = <:sequence< serial "managers_id_seq">>
+
+let managers = <:table< managers (
+  id integer NOT NULL DEFAULT(nextval $managers_id_seq$),
+  username text NOT NULL,
+  name text NOT NULL,
+  password text NOT NULL,
+  provider_id integer NOT NULL
+) >>
 
 let queues_id_seq = <:sequence< serial "queues_id_seq">>
 
@@ -84,8 +85,6 @@ let user_check email pwd =
            user_.email = $string:email$;
            user_.password = $string:pwd$; >>)
 
-(* managers function *)
-
 (* providers function *)
 let get_all_providers () =
   (get_db () >>= fun dbh ->
@@ -101,5 +100,21 @@ let get_provider name =
             name = provider_.name} |
             provider_ in $providers$;
             provider_.name = $string:name$; >>)
+
+(* managers function *)
+let manager_check username pwd =
+  (get_db () >>= fun dbh ->
+  Lwt_Query.view dbh
+  <:view< {id = manager_.id;
+           username = manager_.username;
+           name = manager_.name;
+           password = manager_.password;
+           provider_id = manager_.provider_id;
+           provider_name = provider_.name} |
+           manager_ in $managers$;
+           provider_ in $providers$;
+           manager_.provider_id = provider_.id;
+           manager_.username = $string:username$;
+           manager_.password = $string:pwd$; >>)
 
 (* queues function *)

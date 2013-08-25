@@ -97,3 +97,8 @@ let provider_page (provider : Memstore.provider) person =
   ]
   in
   Document.create_page title content
+
+let manager_page provider manager =
+  let title = page_title (provider#get_name) in
+  let content = [p [pcdata "Hi "; pcdata (manager#get_name)]] in
+  Document.create_page title content
