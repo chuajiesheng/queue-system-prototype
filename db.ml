@@ -85,6 +85,15 @@ let user_check email pwd =
            user_.email = $string:email$;
            user_.password = $string:pwd$; >>)
 
+let user_insert email name pwd =
+  (get_db () >>= fun dbh ->
+  Lwt_Query.query dbh
+  <:insert< $users$ :=
+    { id = nextval $users_id_seq$;
+      email = $string:email$;
+      name = $string:name$;
+      password = $string:pwd$; } >>)
+
 (* providers function *)
 let get_all_providers () =
   (get_db () >>= fun dbh ->

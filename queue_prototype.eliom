@@ -84,13 +84,29 @@ let () = Eliom_registration.Redirection.register
     | (_, _) -> Lwt.return Services.login_service
   )
 
-let () = Queue_prototype_app.register
+let () = Eliom_registration.Redirection.register
   ~service:Services.oauth_service
   (fun () (email, (name, id)) ->
+    let hash s = Cryptokit.hash_string (Cryptokit.Hash.sha1()) s in
     let _ = Eliom_lib.debug "[oauth_service] email: %s" email in
     let _ = Eliom_lib.debug "[oauth_service] name: %s" name in
     let _ = Eliom_lib.debug "[oauth_service] id: %s" id in
-    (Lazy.force Pages.menu_page))
+    lwt u = Db.user_check
+          (String.escaped email) (Util.tohex (hash id)) >>=
+      (function
+      | res::_ ->
+        let u_id = Int32.to_int (Sql.get res#id) in
+        let email = Sql.get res#email in
+        let name = Sql.get res#name in
+        let _ = Session.set_person (new Memstore.person u_id email name) in
+        let _ = Eliom_lib.debug "[oauth_service] %s authenticated" email in
+        Lwt.return ()
+      | _ ->
+        Db.user_insert email name (Util.tohex (hash id)) >>=
+          (function () -> Lwt.return ())
+      ) in
+    Lwt.return Services.menu_service
+  )
 
 let () = Queue_prototype_app.register
   ~service:Services.sign_up_service
