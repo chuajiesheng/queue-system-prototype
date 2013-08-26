@@ -103,7 +103,9 @@ let () = Eliom_registration.Redirection.register
         Lwt.return ()
       | _ ->
         Db.user_insert email name (Util.tohex (hash id)) >>=
-          (function () -> Lwt.return ())
+          (function () ->
+            (* TODO: add session variable *)
+            Lwt.return ())
       ) in
     Lwt.return Services.menu_service
   )
