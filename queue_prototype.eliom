@@ -86,7 +86,7 @@ let () = Eliom_registration.Redirection.register
     | (_, _) -> Lwt.return Services.login_service
   )
 
-let rec authenticate_user ~email ~name ~pwd =
+let rec oauthenticate_user ~email ~name ~pwd =
   let hash s = Cryptokit.hash_string (Cryptokit.Hash.sha1()) s in
   Db.user_check (String.escaped email) (Util.tohex (hash pwd)) >>=
     (function
@@ -101,7 +101,7 @@ let rec authenticate_user ~email ~name ~pwd =
       Db.user_insert email name (Util.tohex (hash pwd)) >>=
         (function () ->
           let _ = Eliom_lib.debug "[oauth_service] %s registered" email in
-          let _ = authenticate_user ~email:email ~name:name ~pwd:pwd in
+          let _ = oauthenticate_user ~email:email ~name:name ~pwd:pwd in
           Lwt.return ()
         ))
 
@@ -111,7 +111,7 @@ let () = Eliom_registration.Redirection.register
     let _ = Eliom_lib.debug "[oauth_service] email: %s" email in
     let _ = Eliom_lib.debug "[oauth_service] name: %s" name in
     let _ = Eliom_lib.debug "[oauth_service] id: %s" id in
-    let _ = authenticate_user ~email:email ~name:name ~pwd:id in
+    let _ = oauthenticate_user ~email:email ~name:name ~pwd:id in
     Lwt.return Services.menu_service
   )
 
@@ -154,7 +154,9 @@ let () = Queue_prototype_app.register
     match (provider, person) with
     | Some(pr), Some(ps) -> Pages.provider_page pr ps
     | None, Some(ps) -> (Lazy.force Pages.menu_page)
-    | _, _ -> Pages.login_page
+    | _, _ ->
+      let _ = Eliom_lib.debug "[provider_service] redirect to login page" in
+      Pages.login_page
   )
 
 let () = Queue_prototype_app.register

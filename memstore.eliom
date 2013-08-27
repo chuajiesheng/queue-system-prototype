@@ -110,3 +110,15 @@ let rpc_get_queue =
       in
       Lwt.return ()
     )
+
+let rpc_call_queue =
+  server_function Json.t<json_queue_person>
+    (fun (provider_name, id, email, name) ->
+      Lwt.return ()
+    )
+
+let rpc_remove_queue =
+  server_function Json.t<json_queue_person>
+    (fun (provider_name, id, email, name) ->
+      Lwt.return ()
+    )
