@@ -105,7 +105,7 @@ let manager_page provider manager =
     match list with
     | head::tail ->
       let provider_name = provider#get_name in
-      let q_no = head#get_queue_no in
+      let person_queue_no = head#get_queue_no in
       let person_id = head#get_id in
       let person_email = head#get_email in
       let person_name = head#get_name in
@@ -148,9 +148,9 @@ let manager_page provider manager =
                   Lwt.return ())
             )) }} in
       let template person =
-        tr [td [pcdata (string_of_int person#get_queue_no)];
-            td [pcdata person#get_name];
-            td [pcdata person#get_email];
+        tr [td [pcdata (string_of_int person_queue_no)];
+            td [pcdata person_name];
+            td [pcdata person_email];
             td [button_call];
             td [button_remove]
            ] in
