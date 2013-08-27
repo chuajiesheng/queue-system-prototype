@@ -163,12 +163,17 @@ let manager_page provider manager =
         heading
       ]];
       div ~a:[Bootstrap.row] [div ~a:[Bootstrap.col_lg 8; Bootstrap.col_offset 2] [
+        br ();
+      ]];
+      div ~a:[Bootstrap.row] [div ~a:[Bootstrap.col_lg 8; Bootstrap.col_offset 2] [
+        h4 [pcdata "Arrived"];
         arrived_queue_table
       ]];
       div ~a:[Bootstrap.row] [div ~a:[Bootstrap.col_lg 8; Bootstrap.col_offset 2] [
         hr ();
       ]];
       div ~a:[Bootstrap.row] [div ~a:[Bootstrap.col_lg 8; Bootstrap.col_offset 2] [
+        h4 [pcdata "In Queue"];
         main_queue_table
       ]]
     ] in
