@@ -3,6 +3,8 @@
   open Eliom_content
 }}
 
+open StdLabels
+
 module Queue_prototype_app =
   Eliom_registration.App (
     struct
@@ -84,29 +86,32 @@ let () = Eliom_registration.Redirection.register
     | (_, _) -> Lwt.return Services.login_service
   )
 
+let rec authenticate_user ~email ~name ~pwd =
+  let hash s = Cryptokit.hash_string (Cryptokit.Hash.sha1()) s in
+  Db.user_check (String.escaped email) (Util.tohex (hash pwd)) >>=
+    (function
+    | res::_ ->
+      let u_id = Int32.to_int (Sql.get res#id) in
+      let email = Sql.get res#email in
+      let name = Sql.get res#name in
+      let _ = Session.set_person (new Memstore.person u_id email name) in
+      let _ = Eliom_lib.debug "[oauth_service] %s authenticated" email in
+      Lwt.return ()
+    | _ ->
+      Db.user_insert email name (Util.tohex (hash pwd)) >>=
+        (function () ->
+          let _ = Eliom_lib.debug "[oauth_service] %s registered" email in
+          let _ = authenticate_user ~email:email ~name:name ~pwd:pwd in
+          Lwt.return ()
+        ))
+
 let () = Eliom_registration.Redirection.register
   ~service:Services.oauth_service
   (fun () (email, (name, id)) ->
-    let hash s = Cryptokit.hash_string (Cryptokit.Hash.sha1()) s in
     let _ = Eliom_lib.debug "[oauth_service] email: %s" email in
     let _ = Eliom_lib.debug "[oauth_service] name: %s" name in
     let _ = Eliom_lib.debug "[oauth_service] id: %s" id in
-    lwt u = Db.user_check
-          (String.escaped email) (Util.tohex (hash id)) >>=
-      (function
-      | res::_ ->
-        let u_id = Int32.to_int (Sql.get res#id) in
-        let email = Sql.get res#email in
-        let name = Sql.get res#name in
-        let _ = Session.set_person (new Memstore.person u_id email name) in
-        let _ = Eliom_lib.debug "[oauth_service] %s authenticated" email in
-        Lwt.return ()
-      | _ ->
-        Db.user_insert email name (Util.tohex (hash id)) >>=
-          (function () ->
-            (* TODO: add session variable *)
-            Lwt.return ())
-      ) in
+    let _ = authenticate_user ~email:email ~name:name ~pwd:id in
     Lwt.return Services.menu_service
   )
 
