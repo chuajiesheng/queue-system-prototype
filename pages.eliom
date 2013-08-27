@@ -180,7 +180,7 @@ let manager_page provider manager =
       h5 ~a:[Bootstrap.text_center] [pcdata "Everyone had arrived! ;]"] in
   let content =
     [
-      div ~a:[Bootstrap.row] [div ~a:[Bootstrap.col_lg 8; Bootstrap.col_offset 2] [
+      div ~a:[Bootstrap.row] [div ~a:[Bootstrap.col_lg 8; Bootstrap.col_offset 1] [
         heading
       ]];
       div ~a:[Bootstrap.row] [div ~a:[Bootstrap.col_lg 8; Bootstrap.col_offset 2] [
