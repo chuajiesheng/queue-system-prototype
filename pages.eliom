@@ -100,45 +100,66 @@ let provider_page (provider : Memstore.provider) person =
 
 let manager_page provider manager =
   let title = page_title (provider#get_name) in
-  (* table header template *)
-  let header_template =
-    tr [th [pcdata "#"];
-        th [pcdata "Name"];
-        th [pcdata "Email"];
-        th [pcdata "Call | Arrive"];
-        th [pcdata "Remove"]] in
   (* table body template *)
   let rec table_body_template (list : Memstore.queue_person list) =
-    let button_call = button ~a:[Bootstrap.btn; Bootstrap.btn_default]
-      ~button_type:`Button [pcdata "Call"] in
-    let button_remove = button ~a:[Bootstrap.btn; Bootstrap.btn_default]
-      ~button_type:`Button [pcdata "Remove"] in
-    let onclick provider person = {unit{
-      Lwt_js_events.(
-        async (fun () ->
-          clicks (Eliom_content.Html5.To_dom.of_element %button_call)
-            (fun _ _ ->
-              let _ = Firebug.console##log(Js.string "[manager_page] button clicked") in
-              let _ = Lwt.bind (%Memstore.rpc_call_queue
-                    (%provider#get_name, %person#get_id,
-                     %person#get_email, %person#get_name)) in
-              let _ = Eliom_client.change_page
-                ~service:%Services.manager_service %provider#get_name () in
-              Lwt.return ())
-        )) }} in
-    let template person =
+    match list with
+    | head::tail ->
+      let provider_name = provider#get_name in
+      let q_no = head#get_queue_no in
+      let person_id = head#get_id in
+      let person_email = head#get_email in
+      let person_name = head#get_name in
+      let button_call = button ~a:[Bootstrap.btn; Bootstrap.btn_default]
+        ~button_type:`Button [pcdata "Call"] in
+      let _ =
+        {unit{
+          Lwt_js_events.(
+            async (fun () ->
+              clicks (Eliom_content.Html5.To_dom.of_element %button_call)
+                (fun _ _ ->
+                  let _ = Firebug.console##log_2
+                    (Js.string "call button call pressed for",
+                     Js.string %person_email) in
+                  let _ = Lwt.bind
+                    (%Memstore.rpc_call_queue
+                        (%provider_name, %person_id,
+                         %person_email, %person_name)) in
+                  let _ = Eliom_client.change_page
+                    ~service:%Services.manager_service %provider_name () in
+                  Lwt.return ())
+            )) }} in
+      let button_remove = button ~a:[Bootstrap.btn; Bootstrap.btn_default]
+        ~button_type:`Button [pcdata "Remove"] in
+      let _ =
+        {unit{
+          Lwt_js_events.(
+            async (fun () ->
+              clicks (Eliom_content.Html5.To_dom.of_element %button_remove)
+                (fun _ _ ->
+                  let _ = Firebug.console##log_2
+                    (Js.string "remove button call pressed for",
+                     Js.string %person_email) in
+                  let _ = Lwt.bind
+                    (%Memstore.rpc_remove_queue
+                        (%provider_name, %person_id,
+                         %person_email, %person_name)) in
+                  let _ = Eliom_client.change_page
+                    ~service:%Services.manager_service %provider_name () in
+                  Lwt.return ())
+            )) }} in
+      let template person =
         tr [td [pcdata (string_of_int person#get_queue_no)];
             td [pcdata person#get_name];
             td [pcdata person#get_email];
             td [button_call];
-            td [button_remove]] in
-    match list with
-    | head::tail -> (template head)::(table_body_template tail)
+            td [button_remove]
+           ] in
+      (template head)::(table_body_template tail)
     | [] -> [] in
   (* table template *)
   let table_template (list : Memstore.queue_person list) =
     tablex ~a:[Bootstrap.table; Bootstrap.table_striped; Bootstrap.table_hover]
-            ~thead:(thead [tr [th [pcdata "#"];
+            ~thead:(thead [tr [th [pcdata "Q#"];
                                th [pcdata "Name"];
                                th [pcdata "Email"];
                                th [pcdata "Call | Arrive"];

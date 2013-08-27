@@ -114,11 +114,13 @@ let rpc_get_queue =
 let rpc_call_queue =
   server_function Json.t<json_queue_person>
     (fun (provider_name, id, email, name) ->
+      let _ = Eliom_lib.debug "[rpc_call_queue] calling #%d %s" id email  in
       Lwt.return ()
     )
 
 let rpc_remove_queue =
   server_function Json.t<json_queue_person>
     (fun (provider_name, id, email, name) ->
+      let _ = Eliom_lib.debug "[rpc_remove_queue] removing #%d %s" id email  in
       Lwt.return ()
     )
