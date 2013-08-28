@@ -49,7 +49,9 @@ object (self)
   method get_id = id
   method get_name = name
   method get_main_queue = main_queue
+  method set_main_queue q = main_queue <- q
   method get_arrived_queue = arrived_queue
+  method set_arrived_queue q = arrived_queue <- q
   method get_bus = bus
   method get_last_queue_no =
     let last init person =
