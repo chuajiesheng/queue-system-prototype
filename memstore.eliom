@@ -124,5 +124,28 @@ let rpc_remove_queue =
   server_function Json.t<json_queue_person>
     (fun (provider_name, id, email, name) ->
       let _ = Eliom_lib.debug "[rpc_remove_queue] removing #%d %s" id email  in
+      let _ =
+        try
+          let provider = Hashtbl.find table provider_name in
+          let _ = Eliom_lib.debug "[rpc_remove_queue] found provider %s"
+            provider#get_name in
+          let arrived = provider#get_arrived_queue in
+          let main = provider#get_main_queue in
+          let _ = Eliom_lib.debug "[rpc_remove_queue] queue length: %d"
+            ((List.length arrived) + (List.length main)) in
+          let rec remove l id =
+            match l with
+            | head::tail ->
+              if head#get_id == id
+              then
+                let _ = Eliom_lib.debug "[rpc_remove_queue] found %d" id in
+                tail
+              else head::(remove tail id)
+            | [] -> [] in
+          let _ = provider#set_arrived_queue (remove arrived id) in
+          let _ = provider#set_main_queue (remove main id) in
+          ()
+        with Not_found ->
+          () in
       Lwt.return ()
     )
