@@ -117,6 +117,49 @@ let rpc_call_queue =
   server_function Json.t<json_queue_person>
     (fun (provider_name, id, email, name) ->
       let _ = Eliom_lib.debug "[rpc_call_queue] calling #%d %s" id email  in
+      let _ =
+        try
+          let provider = Hashtbl.find table provider_name in
+          let _ = Eliom_lib.debug "[rpc_call_queue] found provider %s"
+            provider#get_name in
+          let arrived = provider#get_arrived_queue in
+          let main = provider#get_main_queue in
+          let _ = Eliom_lib.debug "[rpc_call_queue] queue length: %d"
+            ((List.length arrived) + (List.length main)) in
+          let rec retrieve l id =
+            match l with
+            | head::tail ->
+              if head#get_id == id
+              then
+                let _ = Eliom_lib.debug "[rpc_call_queue] found %d" id in
+                (Some(head), tail)
+              else
+                let res = match (retrieve tail id) with
+                | Some(p), q ->
+                  (Some(p), head::q)
+                | None, q ->
+                  (None, head::q) in
+                res
+            | [] -> (None, []) in
+          let _ = match (retrieve arrived id) with
+            | Some(p), q ->
+              let _ = provider#set_arrived_queue q in
+              let _ = Eliom_lib.debug "[rpc_call_queue] calling queue no #%d" p#get_queue_no in
+              ()
+            | None, _ ->
+              let _ = Eliom_lib.debug "[rpc_call_queue] cant find queue no to call" in
+              () in
+          let _ = match (retrieve main id) with
+            | Some(p), q ->
+              let _ = provider#set_arrived_queue q in
+              let _ = Eliom_lib.debug "[rpc_call_queue] queue no #%d arrived" p#get_queue_no in
+              ()
+            | None, _ ->
+              let _ = Eliom_lib.debug "[rpc_call_queue] cant find queue no in queue" in
+              () in
+          ()
+        with Not_found ->
+          () in
       Lwt.return ()
     )
 
