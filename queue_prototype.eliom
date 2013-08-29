@@ -26,7 +26,7 @@ let () = Queue_prototype_app.register
 let () = Eliom_registration.Redirection.register
   ~service:Services.auth_service
   (fun () (username, password) ->
-    let hash s = Cryptokit.hash_string (Cryptokit.Hash.sha1()) s in
+    let hash s = Cryptokit.hash_string (Cryptokit.Hash.sha1 ()) s in
     let _ = Eliom_lib.debug
       "[auth_service] hash %s" (Util.tohex (hash password)) in
     lwt u = Db.user_check
