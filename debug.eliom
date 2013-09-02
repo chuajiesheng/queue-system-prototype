@@ -1,3 +1,7 @@
+(* define global for use with the debug system *)
+type debug_mode = Off | Info | Warning | Error (* min to max *)
+let debug = ref Error
+
 (* client debug interface *)
 {client{
   let print f = Printf.ksprintf (fun s -> Firebug.console##log (Js.string s)) f
