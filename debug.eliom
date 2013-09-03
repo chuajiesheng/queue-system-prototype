@@ -10,25 +10,32 @@ let debug = ref Info
 }}
 
 (* server debug interface *)
-let print f = Printf.ksprintf (fun s -> Printf.printf "%s\n%!" s) f
-let eprint f = Printf.ksprintf (fun s -> Printf.eprintf "%s\n%!" s) f
+let print f = Printf.ksprintf (fun s -> Printf.printf "%s" s) f
+let println f = Printf.ksprintf (fun s -> Printf.printf "%s\n%!" s) f
+let eprint f = Printf.ksprintf (fun s -> Printf.eprintf "%s" s) f
+let eprintln f = Printf.ksprintf (fun s -> Printf.eprintf "%s\n%!" s) f
 
 (* error functionality *)
 let error f =
   if !debug = Error
-  then eprint f
+  then Printf.ksprintf (fun s -> Printf.eprintf "[error] %s\n%!" s) f
 
 (* warning functionality *)
 let warn f =
   if !debug = Warning
-  then print f
+  then Printf.ksprintf (fun s -> Printf.printf "[warn] %s\n%!" s) f
   else error f
 
 (* info functionality *)
 let info f =
   if !debug = Info
-  then print f
+  then Printf.ksprintf (fun s -> Printf.printf "[info] %s\n%!" s) f
   else warn f
+
+(* value debug *)
+let value ~meth ~para ~value =
+  if !debug = Info
+  then println "[%s] %s = %s" meth para value
 
 (* trace functionality *)
 let call_stack = Stack.create ()
@@ -41,7 +48,12 @@ let trace_msg (f:string) =
   Stack.push f msg_stack
 
 (* helper function *)
-let construct ~meth ~msg =
+let construct ~level ~meth ~msg =
   let template = format_of_string "[%s] %s" in
   let msg = Printf.sprintf msg in
-  Printf.sprintf template meth msg
+  let str = Printf.sprintf template meth msg in
+  match level with
+  | Info -> Printf.ksprintf (fun s -> Printf.printf "[info] %s\n%!" s) "%s" str
+  | Warning -> Printf.ksprintf (fun s -> Printf.printf "[warning] %s\n%!" s) "%s" str
+  | Error -> Printf.ksprintf (fun s -> Printf.eprintf "[error] %s\n%!" s) "%s" str
+  | _ -> ()
