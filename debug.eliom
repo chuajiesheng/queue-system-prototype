@@ -11,13 +11,12 @@ let debug = ref Info
 
 (* server debug interface *)
 let print f = Printf.ksprintf (fun s -> Printf.printf "%s\n%!" s) f
-let error f = Printf.ksprintf (fun s -> Printf.eprintf "%s\n%!" s) f
-
+let eprint f = Printf.ksprintf (fun s -> Printf.eprintf "%s\n%!" s) f
 
 (* error functionality *)
 let error f =
   if !debug = Error
-  then print f
+  then eprint f
 
 (* warning functionality *)
 let warn f =
