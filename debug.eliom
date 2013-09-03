@@ -1,6 +1,6 @@
 (* define global for use with the debug system *)
 type debug_mode = Off | Error | Warning | Info (* min to max *)
-let debug = ref Error
+let debug = ref Info
 
 (* client debug interface *)
 {client{
