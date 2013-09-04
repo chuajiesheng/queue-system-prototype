@@ -17,20 +17,15 @@ let eprintln f = Printf.ksprintf (fun s -> Printf.eprintf "%s\n%!" s) f
 
 (* error functionality *)
 let error f =
-  if !debug = Error
-  then Printf.ksprintf (fun s -> Printf.eprintf "[error] %s\n%!" s) f
+  Printf.ksprintf (fun s -> Printf.eprintf "[error] %s\n%!" s) f
 
 (* warning functionality *)
 let warn f =
-  if !debug = Warning
-  then Printf.ksprintf (fun s -> Printf.printf "[warn] %s\n%!" s) f
-  else error f
+  Printf.ksprintf (fun s -> Printf.printf "[warn] %s\n%!" s) f
 
 (* info functionality *)
 let info f =
-  if !debug = Info
-  then Printf.ksprintf (fun s -> Printf.printf "[info] %s\n%!" s) f
-  else warn f
+  Printf.ksprintf (fun s -> Printf.printf "[info] %s\n%!" s) f
 
 (* value debug *)
 let value ~meth ~para ~value =
