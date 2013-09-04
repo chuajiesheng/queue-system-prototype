@@ -48,7 +48,7 @@ let construct ~level ~meth ~msg =
   let msg = Printf.sprintf msg in
   let str = Printf.sprintf template meth msg in
   match level with
-  | Info -> Printf.ksprintf (fun s -> Printf.printf "[info] %s\n%!" s) "%s" str
-  | Warning -> Printf.ksprintf (fun s -> Printf.printf "[warning] %s\n%!" s) "%s" str
-  | Error -> Printf.ksprintf (fun s -> Printf.eprintf "[error] %s\n%!" s) "%s" str
+  | Info -> info "%s" str
+  | Warning -> warn "%s" str
+  | Error -> error "%s" str
   | _ -> ()
