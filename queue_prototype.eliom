@@ -37,12 +37,13 @@ let () = Eliom_registration.Redirection.register
         let email = Sql.get res#email in
         let name = Sql.get res#name in
         let _ = Debug.compare ~meth:"auth_service"
+                              ~name:"password hex hash"
                               ~val1:(Util.tohex (hash password))
                               ~val2:(Sql.get res#password) in
-        let _ = Eliom_lib.debug
-          "[auth_service] compare %s %s"
-          (hash password)
-          (Util.hex (Sql.get res#password)) in
+        let _ = Debug.compare ~meth:"auth_service"
+                              ~name:"password hash"
+                              ~val1:(hash password)
+                              ~val2:(Util.hex (Sql.get res#password)) in
         let _ = Session.set_person (new Memstore.person id email name) in
         let _ = Eliom_lib.debug "[auth_service] %s authenticated" email in
         Lwt.return (Some(Services.menu_service))
