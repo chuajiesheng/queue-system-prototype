@@ -36,10 +36,9 @@ let () = Eliom_registration.Redirection.register
         let id = Int32.to_int (Sql.get res#id) in
         let email = Sql.get res#email in
         let name = Sql.get res#name in
-        let _ = Debug.print
-          "[auth_service] compare hex %s %s"
-          (Util.tohex (hash password))
-          (Sql.get res#password) in
+        let _ = Debug.compare ~meth:"auth_service"
+                              ~val1:(Util.tohex (hash password))
+                              ~val2:(Sql.get res#password) in
         let _ = Eliom_lib.debug
           "[auth_service] compare %s %s"
           (hash password)
