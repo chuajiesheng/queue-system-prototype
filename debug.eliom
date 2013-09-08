@@ -53,14 +53,17 @@ let construct ~level ~meth ~msg =
   | Error -> error "%s" str
   | _ -> ()
 
-let compare ~meth ~name ~val1 ~val2 =
-  let template_fail = format_of_string "[%s] %s compare failed %s != %s" in
+let compare_f ~meth ~name ~(func: 'a -> 'a -> int) ~val1 ~val2 =
+let template_fail = format_of_string "[%s] %s compare failed %s != %s" in
   let template_pass = format_of_string "[%s] %s compare passed %s" in
   let out () =
-    if val1 == val2
+    if (func val1 val2) == 0
     then info template_pass meth name val1
     else warn template_fail meth name val1 val2 in
   match !debug with
   | Info -> out ()
-  | _ when val1 != val2 -> out ()
+  | _ when ((func val1 val2) != 0) -> out ()
   | _ -> ()
+
+let compare ~meth ~name ~val1 ~val2 =
+  compare_f ~meth:meth ~name:name ~func:compare ~val1:val1 ~val2:val2
