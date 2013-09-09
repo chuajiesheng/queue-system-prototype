@@ -61,20 +61,21 @@ let () = Eliom_registration.Redirection.register
         let name = Sql.get res#name in
         let provider_id = Int32.to_int (Sql.get res#provider_id) in
         let provider_name = Sql.get res#provider_name in
-        let _ = Eliom_lib.debug
-          "[auth_service] compare hex %s %s"
-          (Util.tohex (hash password))
-          (Sql.get res#password) in
-        let _ = Eliom_lib.debug
-          "[auth_service] compare %s %s"
-          (hash password)
-          (Util.hex (Sql.get res#password)) in
+        let _ = Debug.compare_f ~meth:"auth_service"
+                                ~name:"password hex hash"
+                                ~func:String.compare
+                                ~val1:(Util.tohex (hash password))
+                                ~val2:(Sql.get res#password) in
+        let _ = Debug.compare_f ~meth:"auth_service"
+                                ~name:"password hash"
+                                ~func:String.compare
+                                ~val1:(hash password)
+                                ~val2:(Util.hex (Sql.get res#password)) in
         let _ = Session.set_person
           (new Memstore.person id username name) in
         let _ = Session.set_manager
           (new Memstore.manager id username name provider_id) in
-        let _ = Eliom_lib.debug
-          "[auth_service] manager %s authenticated" username in
+        let _ = Debug.info "[auth_service] %s authenticated" username in
         Lwt.return
           (Some(Eliom_service.preapply
                   ~service:Services.manager_service
