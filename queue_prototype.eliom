@@ -27,8 +27,8 @@ let () = Eliom_registration.Redirection.register
   ~service:Services.auth_service
   (fun () (username, password) ->
     let hash s = Cryptokit.hash_string (Cryptokit.Hash.sha1 ()) s in
-    let _ = Debug.value ~meth:"auth_service" ~para:"hash"
-      ~value:(Util.tohex (hash password)) in
+    let _ = Debug.value_label ~meth:"auth_service" ~para:"hash"
+                              ~value:(Util.tohex (hash password)) in
     lwt u = Db.user_check
           (String.escaped username) (Util.tohex (hash password)) >>=
       (function
@@ -111,9 +111,9 @@ let rec oauthenticate_user ~email ~name ~pwd =
 let () = Eliom_registration.Redirection.register
   ~service:Services.oauth_service
   (fun () (email, (name, id)) ->
-    let _ = Debug.value ~meth:"oauth_service" ~para:"email" ~value:email in
-    let _ = Debug.value ~meth:"oauth_service" ~para:"name" ~value:name in
-    let _ = Debug.value ~meth:"oauth_service" ~para:"id" ~value:id in
+    let _ = Debug.value_label ~meth:"oauth_service" ~para:"email" ~value:email in
+    let _ = Debug.value_label ~meth:"oauth_service" ~para:"name" ~value:name in
+    let _ = Debug.value_label ~meth:"oauth_service" ~para:"id" ~value:id in
     let _ = oauthenticate_user ~email:email ~name:name ~pwd:id in
     Lwt.return Services.menu_service
   )

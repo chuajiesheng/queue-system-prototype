@@ -116,74 +116,76 @@ let rpc_get_queue =
 let rpc_call_queue =
   server_function Json.t<json_queue_person>
     (fun (provider_name, id, email, name) ->
-      let _ = Debug.info "[rpc_call_queue] calling #%d %s" id email in
-      let _ =
-        try
-          let provider = Hashtbl.find table provider_name in
-          let _ = Debug.info "[rpc_call_queue] found provider %s"
-            provider#get_name in
-          let arrived = provider#get_arrived_queue in
-          let main = provider#get_main_queue in
-          let _ = Debug.info "[rpc_call_queue] queue length: %d"
-            ((List.length arrived) + (List.length main)) in
-          let rec retrieve l id =
-            match l with
-            | head::tail ->
+     let meth = "rpc_call_queue" in
+     let _ = Debug.value_label ~meth:meth ~para:"id" ~value:(string_of_int id) in
+     let _ = Debug.info "[rpc_call_queue] calling #%d %s" id email in
+     let _ =
+       try
+         let provider = Hashtbl.find table provider_name in
+         let _ = Debug.info "[rpc_call_queue] found provider %s"
+                            provider#get_name in
+         let arrived = provider#get_arrived_queue in
+         let main = provider#get_main_queue in
+         let _ = Debug.info "[rpc_call_queue] queue length: %d"
+                            ((List.length arrived) + (List.length main)) in
+         let rec retrieve l id =
+           match l with
+           | head::tail ->
               if head#get_id == id
               then
                 let _ = Debug.info "[rpc_call_queue] retrieve found %d" id in
                 let _ = Debug.info
-                  "[rpc_call_queue] with head %d, tail of length %d"
-                  head#get_id (List.length tail) in
+                          "[rpc_call_queue] with head %d, tail of length %d"
+                          head#get_id (List.length tail) in
                 (Some(head), tail)
               else
                 let _ = Debug.info "[rpc_call_queue] appending head %d" head#get_id in
                 let res = match (retrieve tail id) with
-                | Some(p), q ->
-                  (Some(p), head::q)
-                | None, q ->
-                  (None, head::q) in
+                  | Some(p), q ->
+                     (Some(p), head::q)
+                  | None, q ->
+                     (None, head::q) in
                 res
-            | [] -> (None, []) in
-          (* find queue in arrived queue *)
-          let _ = match (retrieve arrived id) with
-            | Some(p), q ->
+           | [] -> (None, []) in
+         (* find queue in arrived queue *)
+         let _ = match (retrieve arrived id) with
+           | Some(p), q ->
               let _ = provider#set_arrived_queue q in
               let _ = Debug.info "[rpc_call_queue] calling queue no #%d"
-                p#get_queue_no in
+                                 p#get_queue_no in
               let _ = Debug.info "[display] call queue no #%d"
-                p#get_queue_no in
+                                 p#get_queue_no in
               ()
-            | None, _ ->
-              let _ = Eliom_lib.debug "[rpc_call_queue] cant find queue no to call" in
+           | None, _ ->
+              let _ = Debug.info "[rpc_call_queue] cant find queue no to call" in
               () in
-          (* find queue in main queue *)
-          let _ = Debug.info "[rpc_call_queue] main queue length %d"
-            (List.length (provider#get_main_queue)) in
-          let _ = match (retrieve main id) with
-            | Some(p), q ->
+         (* find queue in main queue *)
+         let _ = Debug.info "[rpc_call_queue] main queue length %d"
+                            (List.length (provider#get_main_queue)) in
+         let _ = match (retrieve main id) with
+           | Some(p), q ->
               let _ = provider#set_main_queue q in
               let _ = Debug.info "[rpc_call_queue] queue no #%d arrived"
-                p#get_queue_no in
+                                 p#get_queue_no in
               let l = provider#get_arrived_queue in
               let rec slot_in person queue =
                 match queue with
                 | head::tail ->
-                  if person#get_queue_no < head#get_queue_no
-                  then person::head::tail
-                  else head::(slot_in person tail)
+                   if person#get_queue_no < head#get_queue_no
+                   then person::head::tail
+                   else head::(slot_in person tail)
                 | [] -> [person] in
               provider#set_arrived_queue (slot_in p l)
-            | None, _ ->
+           | None, _ ->
               let _ = Debug.info "[rpc_call_queue] cant find queue no in queue" in
               () in
-          let _ = Debug.info "[rpc_call_queue] main queue length %d"
-            (List.length (provider#get_main_queue)) in
-          let _ = Hashtbl.replace table provider_name provider in
-          ()
-        with Not_found ->
-          () in
-      Lwt.return ()
+         let _ = Debug.info "[rpc_call_queue] main queue length %d"
+                            (List.length (provider#get_main_queue)) in
+         let _ = Hashtbl.replace table provider_name provider in
+         ()
+       with Not_found ->
+         () in
+     Lwt.return ()
     )
 
 let rpc_remove_queue =

@@ -28,15 +28,18 @@ let info f =
   Printf.ksprintf (fun s -> if !debug = Info then Printf.printf "[info] %s\n%!" s) f
 
 (* value debug *)
-let value ~meth ~para ~value =
+let value_label ~meth ~para ~value =
   if !debug = Info
   then info "[%s] %s = %s" meth para value
 
+let value meth para value =
+  value_label ~meth:meth ~para:para ~value:value
+
 (* trace functionality *)
 let eval_show f x =
-  let _ = value ~meth:"eval_show" ~para:"before" ~value:x in
+  let _ = value_label ~meth:"eval_show" ~para:"before" ~value:x in
   let res = f x in
-  let _ = value ~meth:"eval_show" ~para:"after" ~value:res in
+  let _ = value_label ~meth:"eval_show" ~para:"after" ~value:res in
   res
 
 let call_stack = Queue.create ()
