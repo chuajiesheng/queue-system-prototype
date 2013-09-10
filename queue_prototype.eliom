@@ -14,7 +14,8 @@ module Queue_prototype_app =
 let () = Queue_prototype_app.register
   ~service:Services.main_service
   (fun () () ->
-    Pages.home_page
+   let _ = Debug.error "not implemented" in
+   Pages.home_page
   )
 
 let () = Queue_prototype_app.register
