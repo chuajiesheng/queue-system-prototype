@@ -25,7 +25,7 @@ let warn f =
 
 (* info functionality *)
 let info f =
-  Printf.ksprintf (fun s -> Printf.printf "[info] %s\n%!" s) f
+  Printf.ksprintf (fun s -> if !debug = Info then Printf.printf "[info] %s\n%!" s) f
 
 (* value debug *)
 let value ~meth ~para ~value =
