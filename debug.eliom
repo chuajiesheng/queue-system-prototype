@@ -1,6 +1,28 @@
+open Config_file
+
 (* define global for use with the debug system *)
 type debug_mode = Off | Error | Warning | Info (* min to max *)
 let debug = ref Info
+let config_file = "debug.config"
+
+let string_of_debug mode =
+  match mode with
+  | Off -> "Off"
+  | Error -> "Error"
+  | Warning -> "Warning"
+  | Info -> "Info"
+
+let check =
+  let group = new group in
+  let debug_config = new int_cp ~group ["debug_config"] 3
+                     "Default debug level. Off = 0 | Error = 1 | Warning = 2 | Info > 2" in
+  let _ = group#read config_file in
+  let _ = debug := match debug_config#get with
+  | 0 -> Off
+  | 1 -> Error
+  | 2 -> Warning
+  | _ -> Info in
+  Printf.eprintf "[init] init with debug %s\n" (string_of_debug !debug)
 
 (* client debug interface *)
 {client{
