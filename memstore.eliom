@@ -116,8 +116,8 @@ let rpc_get_queue =
 let rpc_call_queue =
   server_function Json.t<json_queue_person>
     (fun (provider_name, id, email, name) ->
-     let meth = "rpc_call_queue" in
-     let _ = Debug.value_label ~meth:meth ~para:"id" ~value:(string_of_int id) in
+     let debug_value = Debug.value "rpc_call_queue" in
+     let _ = debug_value "id" (string_of_int id) in
      let _ = Debug.info "[rpc_call_queue] calling #%d %s" id email in
      let _ =
        try
@@ -126,8 +126,8 @@ let rpc_call_queue =
                             provider#get_name in
          let arrived = provider#get_arrived_queue in
          let main = provider#get_main_queue in
-         let _ = Debug.info "[rpc_call_queue] queue length: %d"
-                            ((List.length arrived) + (List.length main)) in
+         let _ = debug_value "queue length"
+                             (string_of_int ((List.length arrived) + (List.length main))) in
          let rec retrieve l id =
            match l with
            | head::tail ->
@@ -160,8 +160,8 @@ let rpc_call_queue =
               let _ = Debug.info "[rpc_call_queue] cant find queue no to call" in
               () in
          (* find queue in main queue *)
-         let _ = Debug.info "[rpc_call_queue] main queue length %d"
-                            (List.length (provider#get_main_queue)) in
+         let _ = debug_value "main queue length"
+                             (string_of_int (List.length (provider#get_main_queue))) in
          let _ = match (retrieve main id) with
            | Some(p), q ->
               let _ = provider#set_main_queue q in
@@ -179,8 +179,8 @@ let rpc_call_queue =
            | None, _ ->
               let _ = Debug.info "[rpc_call_queue] cant find queue no in queue" in
               () in
-         let _ = Debug.info "[rpc_call_queue] main queue length %d"
-                            (List.length (provider#get_main_queue)) in
+         let _ = debug_value "main queue length"
+                            (string_of_int (List.length (provider#get_main_queue))) in
          let _ = Hashtbl.replace table provider_name provider in
          ()
        with Not_found ->
@@ -191,16 +191,18 @@ let rpc_call_queue =
 let rpc_remove_queue =
   server_function Json.t<json_queue_person>
     (fun (provider_name, id, email, name) ->
-      let _ = Debug.info "[rpc_remove_queue] removing #%d %s" id email  in
+     let _ = Debug.info "[rpc_remove_queue] removing #%d %s" id email  in
       let _ =
         try
           let provider = Hashtbl.find table provider_name in
           let _ = Debug.info "[rpc_remove_queue] found provider %s"
-            provider#get_name in
+                             provider#get_name in
           let arrived = provider#get_arrived_queue in
           let main = provider#get_main_queue in
-          let _ = Debug.info "[rpc_remove_queue] queue length: %d"
-            ((List.length arrived) + (List.length main)) in
+          let _ = Debug.value_label ~meth:"[rpc_remove_queue]"
+                                    ~para:"queue length"
+                                    ~value:(string_of_int ((List.length arrived)
+                                                           + (List.length main))) in
           let rec remove l id =
             match l with
             | head::tail ->
