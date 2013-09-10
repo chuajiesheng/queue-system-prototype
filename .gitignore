@@ -40,3 +40,4 @@ _server
 local
 META
 .depend
+debug.config
