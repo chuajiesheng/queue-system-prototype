@@ -30,7 +30,7 @@ let info f =
 (* value debug *)
 let value ~meth ~para ~value =
   if !debug = Info
-  then println "[%s] %s = %s" meth para value
+  then info "[%s] %s = %s" meth para value
 
 (* trace functionality *)
 let call_stack = Stack.create ()
