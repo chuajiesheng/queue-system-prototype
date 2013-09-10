@@ -68,15 +68,15 @@ object (self)
         let last_queue_no = self#get_last_queue_no in
         let q_person = new queue_person person (last_queue_no + 1) in
         let _ = main_queue <- main_queue@[q_person] in
-        Eliom_lib.debug "[provider] new queue person: #%d, %s"
+        Debug.info "[provider] new queue person: #%d, %s"
           (last_queue_no + 1) q_person#get_name
       | _ -> ()
     in
-    Eliom_lib.debug "[provider] new queue length: %d"
+    Debug.info "[provider] new queue length: %d"
       ((List.length main_queue) + (List.length arrived_queue))
   method check_if_exist (person : person) =
     let check_duplication person init person2 =
-      let _ = Eliom_lib.debug "[check_duplication] checking id %d and %d"
+      let _ = Debug.info "[check_duplication] checking id %d and %d"
         person#get_id person2#get_id in
       if person#get_id == person2#get_id then person2#get_queue_no
       else init
@@ -96,14 +96,14 @@ let table : (string, provider) Hashtbl.t =
 let rpc_get_queue =
   server_function Json.t<json_queue_person>
     (fun (provider_name, id, email, name) ->
-      let _ = Eliom_lib.debug "[rpc_get_queue] person %s (%s)" name email in
+      let _ = Debug.info "[rpc_get_queue] person %s (%s)" name email in
       let person = new person id email name in
       let _ =
         try
           let provider = Hashtbl.find table provider_name in
-          let _ = Eliom_lib.debug "[rpc_get_queue] found provider %s" provider#get_name in
+          let _ = Debug.info "[rpc_get_queue] found provider %s" provider#get_name in
           let _ = provider#add_to person in
-          let _ = Eliom_lib.debug "[rpc_get_queue] queue length: %d"
+          let _ = Debug.info "[rpc_get_queue] queue length: %d"
             ((List.length (provider#get_main_queue)) +
                 List.length (provider#get_arrived_queue)) in
           ()
@@ -116,28 +116,28 @@ let rpc_get_queue =
 let rpc_call_queue =
   server_function Json.t<json_queue_person>
     (fun (provider_name, id, email, name) ->
-      let _ = Eliom_lib.debug "[rpc_call_queue] calling #%d %s" id email in
+      let _ = Debug.info "[rpc_call_queue] calling #%d %s" id email in
       let _ =
         try
           let provider = Hashtbl.find table provider_name in
-          let _ = Eliom_lib.debug "[rpc_call_queue] found provider %s"
+          let _ = Debug.info "[rpc_call_queue] found provider %s"
             provider#get_name in
           let arrived = provider#get_arrived_queue in
           let main = provider#get_main_queue in
-          let _ = Eliom_lib.debug "[rpc_call_queue] queue length: %d"
+          let _ = Debug.info "[rpc_call_queue] queue length: %d"
             ((List.length arrived) + (List.length main)) in
           let rec retrieve l id =
             match l with
             | head::tail ->
               if head#get_id == id
               then
-                let _ = Eliom_lib.debug "[rpc_call_queue] retrieve found %d" id in
-                let _ = Eliom_lib.debug
+                let _ = Debug.info "[rpc_call_queue] retrieve found %d" id in
+                let _ = Debug.info
                   "[rpc_call_queue] with head %d, tail of length %d"
                   head#get_id (List.length tail) in
                 (Some(head), tail)
               else
-                let _ = Eliom_lib.debug "[rpc_call_queue] appending head %d" head#get_id in
+                let _ = Debug.info "[rpc_call_queue] appending head %d" head#get_id in
                 let res = match (retrieve tail id) with
                 | Some(p), q ->
                   (Some(p), head::q)
@@ -149,21 +149,21 @@ let rpc_call_queue =
           let _ = match (retrieve arrived id) with
             | Some(p), q ->
               let _ = provider#set_arrived_queue q in
-              let _ = Eliom_lib.debug "[rpc_call_queue] calling queue no #%d"
+              let _ = Debug.info "[rpc_call_queue] calling queue no #%d"
                 p#get_queue_no in
-              let _ = Eliom_lib.debug "[display] call queue no #%d"
+              let _ = Debug.info "[display] call queue no #%d"
                 p#get_queue_no in
               ()
             | None, _ ->
               let _ = Eliom_lib.debug "[rpc_call_queue] cant find queue no to call" in
               () in
           (* find queue in main queue *)
-          let _ = Eliom_lib.debug "[rpc_call_queue] main queue length %d"
+          let _ = Debug.info "[rpc_call_queue] main queue length %d"
             (List.length (provider#get_main_queue)) in
           let _ = match (retrieve main id) with
             | Some(p), q ->
               let _ = provider#set_main_queue q in
-              let _ = Eliom_lib.debug "[rpc_call_queue] queue no #%d arrived"
+              let _ = Debug.info "[rpc_call_queue] queue no #%d arrived"
                 p#get_queue_no in
               let l = provider#get_arrived_queue in
               let rec slot_in person queue =
@@ -175,9 +175,9 @@ let rpc_call_queue =
                 | [] -> [person] in
               provider#set_arrived_queue (slot_in p l)
             | None, _ ->
-              let _ = Eliom_lib.debug "[rpc_call_queue] cant find queue no in queue" in
+              let _ = Debug.info "[rpc_call_queue] cant find queue no in queue" in
               () in
-          let _ = Eliom_lib.debug "[rpc_call_queue] main queue length %d"
+          let _ = Debug.info "[rpc_call_queue] main queue length %d"
             (List.length (provider#get_main_queue)) in
           let _ = Hashtbl.replace table provider_name provider in
           ()
@@ -189,22 +189,22 @@ let rpc_call_queue =
 let rpc_remove_queue =
   server_function Json.t<json_queue_person>
     (fun (provider_name, id, email, name) ->
-      let _ = Eliom_lib.debug "[rpc_remove_queue] removing #%d %s" id email  in
+      let _ = Debug.info "[rpc_remove_queue] removing #%d %s" id email  in
       let _ =
         try
           let provider = Hashtbl.find table provider_name in
-          let _ = Eliom_lib.debug "[rpc_remove_queue] found provider %s"
+          let _ = Debug.info "[rpc_remove_queue] found provider %s"
             provider#get_name in
           let arrived = provider#get_arrived_queue in
           let main = provider#get_main_queue in
-          let _ = Eliom_lib.debug "[rpc_remove_queue] queue length: %d"
+          let _ = Debug.info "[rpc_remove_queue] queue length: %d"
             ((List.length arrived) + (List.length main)) in
           let rec remove l id =
             match l with
             | head::tail ->
               if head#get_id == id
               then
-                let _ = Eliom_lib.debug "[rpc_remove_queue] found %d" id in
+                let _ = Debug.info "[rpc_remove_queue] found %d" id in
                 tail
               else head::(remove tail id)
             | [] -> [] in

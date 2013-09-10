@@ -33,6 +33,12 @@ let value ~meth ~para ~value =
   then info "[%s] %s = %s" meth para value
 
 (* trace functionality *)
+let eval_show f x =
+  let _ = value ~meth:"eval_show" ~para:"before" ~value:x in
+  let res = f x in
+  let _ = value ~meth:"eval_show" ~para:"after" ~value:res in
+  res
+
 let call_stack = Queue.create ()
 let msg_stack = Queue.create ()
 
