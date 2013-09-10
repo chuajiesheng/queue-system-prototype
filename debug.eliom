@@ -33,14 +33,21 @@ let value ~meth ~para ~value =
   then info "[%s] %s = %s" meth para value
 
 (* trace functionality *)
-let call_stack = Stack.create ()
-let msg_stack = Stack.create ()
+let call_stack = Queue.create ()
+let msg_stack = Queue.create ()
 
 let trace_func (f:string) =
-  Stack.push f call_stack
+  Queue.push f call_stack
 
 let trace_msg (f:string) =
-  Stack.push f msg_stack
+  Queue.push f msg_stack
+
+let rec trace_dump ~s =
+  if Queue.is_empty s then
+    ()
+  else
+    let _ = info "%s" (Queue.pop s) in
+    trace_dump ~s:s
 
 (* helper function *)
 let construct ~level ~meth ~msg =
