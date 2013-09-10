@@ -40,13 +40,13 @@ let eprintln f = Printf.ksprintf (fun s -> Printf.eprintf "%s\n%!" s) f
 (* error functionality *)
 let error f =
   Printf.ksprintf (fun s ->
-                   if !debug = Error
+                   if (!debug = Info || !debug = Warning || !debug = Error)
                    then Printf.eprintf "[error] %s\n%!" s) f
 
 (* warning functionality *)
 let warn f =
   Printf.ksprintf (fun s ->
-                   if !debug = Warning
+                   if (!debug = Info || !debug = Warning)
                    then Printf.printf "[warn] %s\n%!" s) f
 
 (* info functionality *)
