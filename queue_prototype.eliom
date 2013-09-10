@@ -98,12 +98,12 @@ let rec oauthenticate_user ~email ~name ~pwd =
       let email = Sql.get res#email in
       let name = Sql.get res#name in
       let _ = Session.set_person (new Memstore.person u_id email name) in
-      let _ = Eliom_lib.debug "[oauth_service] %s authenticated" email in
+      let _ = Debug.info "[oauth_service] %s authenticated" email in
       Lwt.return ()
     | _ ->
       Db.user_insert email name (Util.tohex (hash pwd)) >>=
         (function () ->
-          let _ = Eliom_lib.debug "[oauth_service] %s registered" email in
+          let _ = Debug.info "[oauth_service] %s registered" email in
           let _ = oauthenticate_user ~email:email ~name:name ~pwd:pwd in
           Lwt.return ()
         ))
@@ -111,9 +111,9 @@ let rec oauthenticate_user ~email ~name ~pwd =
 let () = Eliom_registration.Redirection.register
   ~service:Services.oauth_service
   (fun () (email, (name, id)) ->
-    let _ = Eliom_lib.debug "[oauth_service] email: %s" email in
-    let _ = Eliom_lib.debug "[oauth_service] name: %s" name in
-    let _ = Eliom_lib.debug "[oauth_service] id: %s" id in
+    let _ = Debug.value ~meth:"oauth_service" ~para:"email" ~value:email in
+    let _ = Debug.value ~meth:"oauth_service" ~para:"name" ~value:name in
+    let _ = Debug.value ~meth:"oauth_service" ~para:"id" ~value:id in
     let _ = oauthenticate_user ~email:email ~name:name ~pwd:id in
     Lwt.return Services.menu_service
   )
@@ -133,21 +133,21 @@ let () = Queue_prototype_app.register
 let () = Queue_prototype_app.register
   ~service:Services.provider_service
   (fun provider () ->
-    let _ = Eliom_lib.debug "[provider_service] looking for %s" provider in
-    lwt provider =
-      try
-        let p = Hashtbl.find Memstore.table provider in
-        Lwt.return (Some (p))
-      with Not_found ->
-        let _ = Eliom_lib.debug "[provider_service] provider not in hashtable" in
-        Db.get_provider provider >>=
+   let _ = Debug.info "[provider_service] looking for %s" provider in
+   lwt provider =
+     try
+       let p = Hashtbl.find Memstore.table provider in
+       Lwt.return (Some (p))
+     with Not_found ->
+       let _ = Debug.info "[provider_service] provider not in hashtable" in
+       Db.get_provider provider >>=
           (function
           | res::_ ->
             let id = Sql.get res#id in
             let name = Sql.get res#name in
             let p = new Memstore.provider (Int32.to_int id) name in
             Hashtbl.add Memstore.table provider p;
-            let _ = Eliom_lib.debug "[provider_service] created new provider" in
+            let _ = Debug.info "[provider_service] created new provider" in
             Lwt.return (Some(p))
           | _ ->
             Lwt.return (None)
@@ -158,20 +158,20 @@ let () = Queue_prototype_app.register
     | Some(pr), Some(ps) -> Pages.provider_page pr ps
     | None, Some(ps) -> (Lazy.force Pages.menu_page)
     | _, _ ->
-      let _ = Eliom_lib.debug "[provider_service] redirect to login page" in
+      let _ = Debug.info "[provider_service] redirect to login page" in
       Pages.login_page
   )
 
 let () = Queue_prototype_app.register
   ~service:Services.manager_service
   (fun provider () ->
-  let _ = Eliom_lib.debug "[manager_service] looking for %s" provider in
+  let _ = Debug.info "[manager_service] looking for %s" provider in
   lwt provider =
     try
       let p = Hashtbl.find Memstore.table provider in
       Lwt.return (Some (p))
     with Not_found ->
-      let _ = Eliom_lib.debug "[provider_service] provider not in hashtable" in
+      let _ = Debug.info "[provider_service] provider not in hashtable" in
       Db.get_provider provider >>=
         (function
         | res::_ ->
@@ -179,7 +179,7 @@ let () = Queue_prototype_app.register
           let name = Sql.get res#name in
           let p = new Memstore.provider (Int32.to_int id) name in
           Hashtbl.add Memstore.table provider p;
-          let _ = Eliom_lib.debug "[provider_service] created new provider" in
+          let _ = Debug.info "[provider_service] created new provider" in
           Lwt.return (Some(p))
         | _ ->
           Lwt.return (None)
