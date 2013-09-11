@@ -14,15 +14,26 @@ let string_of_debug mode =
 
 let check =
   let group = new group in
-  let debug_config = new int_cp ~group ["debug_config"] 3
-                     "Default debug level. Off = 0 | Error = 1 | Warning = 2 | Info > 2" in
+  let debug_config = new int_cp
+                         ~group ["debug_config"]
+                         3
+                         "Default debug level. Off = 0 | Error = 1 | Warning = 2 | Info > 2"
+  in
+  let regex_config = new list_cp string_wrappers
+                         ~group ["debug_regex"]
+                         []
+                         "Methods allow to print"
+  in
   let _ = group#read config_file in
+  let _ = group#write config_file in
   let _ = debug := match debug_config#get with
   | 0 -> Off
   | 1 -> Error
   | 2 -> Warning
   | _ -> Info in
-  Printf.eprintf "[init] init with debug %s\n" (string_of_debug !debug)
+  let _ = Printf.printf "[init] init with debug %s\n" (string_of_debug !debug) in
+  Printf.printf "[init] regex: %s\n"
+                 (List.fold_left (fun i s -> i ^ " " ^ s) "" regex_config#get)
 
 (* client debug interface *)
 {client{
