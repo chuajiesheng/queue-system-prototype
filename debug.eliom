@@ -3,6 +3,7 @@ open Config_file
 (* define global for use with the debug system *)
 type debug_mode = Off | Error | Warning | Info (* min to max *)
 let debug = ref Info
+let debug_regex = ref []
 let config_file = "debug.config"
 
 let string_of_debug mode =
