@@ -32,9 +32,10 @@ let check =
   | 1 -> Error
   | 2 -> Warning
   | _ -> Info in
+  let _ = debug_regex := regex_config#get in
   let _ = Printf.printf "[init] init with debug %s\n" (string_of_debug !debug) in
   Printf.printf "[init] regex: %s\n"
-                 (List.fold_left (fun i s -> i ^ " " ^ s) "" regex_config#get)
+                 (List.fold_left (fun i s -> s ^ " " ^ i) "" !debug_regex)
 
 (* client debug interface *)
 {client{
