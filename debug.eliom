@@ -26,7 +26,6 @@ let check =
                          "Methods allow to print"
   in
   let _ = group#read config_file in
-  let _ = group#write config_file in
   let _ = debug := match debug_config#get with
   | 0 -> Off
   | 1 -> Error
