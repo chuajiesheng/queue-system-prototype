@@ -75,6 +75,13 @@ let value_label ~meth ~para ~value =
 let value meth para value =
   value_label ~meth:meth ~para:para ~value:value
 
+(* list printing *)
+let list ~to_str meth para list =
+  let formatted =
+    List.fold_left (fun a i -> a ^ ";" ^ i) "" (List.map to_str list) in
+  if !debug = Info
+  then info "[%s] %s = %s" meth para formatted
+
 (* trace functionality *)
 let eval_show f x =
   let _ = value_label ~meth:"eval_show" ~para:"before" ~value:x in
