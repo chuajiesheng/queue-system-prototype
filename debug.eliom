@@ -1,10 +1,9 @@
 open Config_file
 
 (* define global for use with the debug system *)
+{shared{
 type debug_mode = Off | Error | Warning | Info (* min to max *)
 let debug = ref Info
-let debug_regex = ref []
-let config_file = "debug.config"
 
 let string_of_debug mode =
   match mode with
@@ -12,6 +11,10 @@ let string_of_debug mode =
   | Error -> "Error"
   | Warning -> "Warning"
   | Info -> "Info"
+}}
+
+let debug_regex = ref []
+let config_file = "debug.config"
 
 let check =
   let group = new group in
