@@ -96,7 +96,25 @@ let in_debug s =
     try
       List.find (fun b -> b == true) l
     with _ -> false in
-  result (matching s)
+  match !debug_switch, (result (matching s)) with
+  | true, res -> res
+  | false, _ -> true
+
+let in_debug_test =
+  let s = "[auth_service] hello world" in
+  let res = in_debug s in
+  print "test method: %b\n" res
+
+let in_debug_test_2 =
+  let s = "[auth_services123] hello world" in
+  let res = in_debug s in
+  print "fail test method: %b\n" res
+
+let in_debug_test_3 =
+  let s = "[hello_world] hello world" in
+  let res = in_debug s in
+  print "fail test method: %b\n" res
+
 
 (* error functionality *)
 let error f =
