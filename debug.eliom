@@ -61,7 +61,7 @@ let check () =
          (fun s ->
           if ((!(%debug) = Info))
           then Firebug.console##log_2
-                              (Js.string ("[info]"),
+                              (Js.string ("[error]"),
                                Js.string s)) f
 
     let warn f =
@@ -69,7 +69,7 @@ let check () =
          (fun s ->
           if ((!(%debug) = Info) || (!(%debug) = Warning))
           then Firebug.console##log_2
-                              (Js.string ("[info]"),
+                              (Js.string ("[warn]"),
                                Js.string s)) f
 
     let info f =
