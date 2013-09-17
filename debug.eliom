@@ -150,10 +150,10 @@ let list ~to_str meth para list =
   then info "[%s] %s = %s" meth para formatted
 
 (* trace functionality *)
-let eval_show f x =
-  let _ = value_label ~meth:"eval_show" ~para:"before" ~value:x in
+let eval_show ~p1 ~p2 f x =
+  let _ = value_label ~meth:"eval_show" ~para:"before" ~value:(p1 x) in
   let res = f x in
-  let _ = value_label ~meth:"eval_show" ~para:"after" ~value:res in
+  let _ = value_label ~meth:"eval_show" ~para:"after" ~value:(p2 res) in
   res
 
 let call_stack = Queue.create ()
