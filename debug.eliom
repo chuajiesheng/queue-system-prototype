@@ -101,19 +101,19 @@ let in_debug s =
 (* error functionality *)
 let error f =
   Printf.ksprintf (fun s ->
-                   if (!debug = Info || !debug = Warning || !debug = Error)
+                   if (!debug = Info || !debug = Warning || !debug = Error) && (in_debug s)
                    then Printf.eprintf "[error] %s\n%!" s) f
 
 (* warning functionality *)
 let warn f =
   Printf.ksprintf (fun s ->
-                   if (!debug = Info || !debug = Warning)
+                   if (!debug = Info || !debug = Warning) && (in_debug s)
                    then Printf.printf "[warn] %s\n%!" s) f
 
 (* info functionality *)
 let info f =
   Printf.ksprintf (fun s ->
-                   if !debug = Info
+                   if !debug = Info && (in_debug s)
                    then Printf.printf "[info] %s\n%!" s) f
 
 (* value debug *)
