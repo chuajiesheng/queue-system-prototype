@@ -42,9 +42,10 @@ let check () =
   | _ -> Info in
   let _ = debug_switch := regex_switch#get in
   let _ = debug_regex := regex_method#get in
-  let _ = Printf.printf "[init] init with debug %s\n" (string_of_debug !debug) in
-  Printf.printf "[init] regex %b: %s\n" !debug_switch
-                 (List.fold_left (fun i s -> s ^ " " ^ i) "" !debug_regex)
+  let i1 () = Printf.printf "[init] init with debug %s\n" (string_of_debug !debug) in
+  let i2 () = Printf.printf "[init] regex %b: %s\n" !debug_switch
+                        (List.fold_left (fun i s -> s ^ " " ^ i) "" !debug_regex) in
+  ()
 
 (* client debug interface *)
 {client{
