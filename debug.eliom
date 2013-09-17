@@ -79,6 +79,17 @@ let println f = Printf.ksprintf (fun s -> Printf.printf "%s\n%!" s) f
 let eprint f = Printf.ksprintf (fun s -> Printf.eprintf "%s" s) f
 let eprintln f = Printf.ksprintf (fun s -> Printf.eprintf "%s\n%!" s) f
 
+(* regex checking function *)
+let in_debug s =
+  let create_regex s = Str.regexp ("\\[" ^ s ^ "\\]") in
+  let regex = List.map create_regex !debug_regex in
+  let matching s = List.map (fun r -> Str.string_match r s 0) regex in
+  let result l =
+    try
+      List.find (fun b -> b == true) l
+    with _ -> false in
+  result (matching s)
+
 (* error functionality *)
 let error f =
   Printf.ksprintf (fun s ->
