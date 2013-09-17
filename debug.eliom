@@ -41,9 +41,36 @@ let check =
 
 (* client debug interface *)
 {client{
-  let print f = Printf.ksprintf (fun s -> Firebug.console##log (Js.string s)) f
-  let debug f = Printf.ksprintf (fun s -> Firebug.console##debug (Js.string s)) f
-  let error f = Printf.ksprintf (fun s -> Firebug.console##error (Js.string s)) f
+
+     (* standard printing *)
+     let print f = Printf.ksprintf (fun s -> Firebug.console##log (Js.string s)) f
+     let debug f = Printf.ksprintf (fun s -> Firebug.console##debug (Js.string s)) f
+     let error f = Printf.ksprintf (fun s -> Firebug.console##error (Js.string s)) f
+
+     (* debug type printing *)
+    let info f =
+       Printf.ksprintf
+         (fun s ->
+          if ((!(%debug) = Info))
+          then Firebug.console##log_2
+                              (Js.string ("[info]"),
+                               Js.string s)) f
+
+    let warn f =
+       Printf.ksprintf
+         (fun s ->
+          if ((!(%debug) = Info) || (!(%debug) = Warning))
+          then Firebug.console##log_2
+                              (Js.string ("[info]"),
+                               Js.string s)) f
+
+    let info f =
+       Printf.ksprintf
+         (fun s ->
+          if ((!(%debug) = Info) || (!(%debug) = Warning) || (!(%debug) = Error))
+          then Firebug.console##log_2
+                              (Js.string ("[info]"),
+                               Js.string s)) f
 }}
 
 (* server debug interface *)
