@@ -13,10 +13,11 @@ let string_of_debug mode =
   | Info -> "Info"
 }}
 
+let debug_switch = ref true
 let debug_regex = ref []
 let config_file = "debug.config"
 
-let check =
+let check () =
   let group = new group in
   let debug_config = new int_cp
                          ~group ["debug_config"]
@@ -34,15 +35,15 @@ let check =
                          "Methods allow to print"
   in
   let _ = group#read config_file in
-  let _ = group#write config_file in
   let _ = debug := match debug_config#get with
   | 0 -> Off
   | 1 -> Error
   | 2 -> Warning
   | _ -> Info in
+  let _ = debug_switch := regex_switch#get in
   let _ = debug_regex := regex_method#get in
   let _ = Printf.printf "[init] init with debug %s\n" (string_of_debug !debug) in
-  Printf.printf "[init] regex: %s\n"
+  Printf.printf "[init] regex %b: %s\n" !debug_switch
                  (List.fold_left (fun i s -> s ^ " " ^ i) "" !debug_regex)
 
 (* client debug interface *)
@@ -87,6 +88,7 @@ let eprintln f = Printf.ksprintf (fun s -> Printf.eprintf "%s\n%!" s) f
 
 (* regex checking function *)
 let in_debug s =
+  let _ = check () in
   let create_regex s = Str.regexp ("\\[" ^ s ^ "\\]") in
   let regex = List.map create_regex !debug_regex in
   let matching s = List.map (fun r -> Str.string_match r s 0) regex in
