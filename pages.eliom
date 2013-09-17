@@ -117,17 +117,17 @@ let manager_page provider manager =
             async (fun () ->
               clicks (Eliom_content.Html5.To_dom.of_element %button_call)
                 (fun _ _ ->
-                  let _ = Firebug.console##log_2
-                    (Js.string "call button call pressed for",
-                     Js.string %person_email) in
-                  let _ = Lwt.bind
-                    (%Memstore.rpc_call_queue
-                        (%provider_name, %person_id,
-                         %person_email, %person_name)) in
-                  let _ = Eliom_client.change_page
-                    ~service:%Services.manager_service %provider_name () in
-                  Lwt.return ())
-            )) }} in
+                 let _ = Firebug.console##log_2
+                                        (Js.string "call button call pressed for",
+                                         Js.string %person_email) in
+                 let _ = Lwt.bind
+                           (%Memstore.rpc_call_queue
+                               (%provider_name, %person_id,
+                                %person_email, %person_name)) in
+                 let _ = Eliom_client.change_page
+                           ~service:%Services.manager_service %provider_name () in
+                 Lwt.return ())
+        )) }} in
       let button_remove = button ~a:[Bootstrap.btn; Bootstrap.btn_default]
         ~button_type:`Button [pcdata "Remove"] in
       let _ =
