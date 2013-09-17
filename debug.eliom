@@ -100,22 +100,6 @@ let in_debug s =
   | true, res -> res
   | false, _ -> true
 
-let in_debug_test =
-  let s = "[auth_service] hello world" in
-  let res = in_debug s in
-  print "test method: %b\n" res
-
-let in_debug_test_2 =
-  let s = "[auth_services123] hello world" in
-  let res = in_debug s in
-  print "fail test method: %b\n" res
-
-let in_debug_test_3 =
-  let s = "[hello_world] hello world" in
-  let res = in_debug s in
-  print "fail test method: %b\n" res
-
-
 (* error functionality *)
 let error f =
   Printf.ksprintf (fun s ->
@@ -197,3 +181,19 @@ let template_fail = format_of_string "[%s] %s compare failed %s != %s" in
 
 let compare ~meth ~name ~val1 ~val2 =
   compare_f ~meth:meth ~name:name ~func:compare ~val1:val1 ~val2:val2
+
+(* testing *)
+let in_debug_test =
+  let s = "[auth_service] hello world" in
+  let res = in_debug s in
+  print "test method: %b\n" res
+
+let in_debug_test_2 =
+  let s = "[auth_services123] hello world" in
+  let res = in_debug s in
+  print "fail test method: %b\n" res
+
+let in_debug_test_3 =
+  let s = "[hello_world] hello world" in
+  let res = in_debug s in
+  print "fail test method: %b\n" res
