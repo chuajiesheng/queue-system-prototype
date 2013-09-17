@@ -23,18 +23,24 @@ let check =
                          3
                          "Default debug level. Off = 0 | Error = 1 | Warning = 2 | Info > 2"
   in
-  let regex_config = new list_cp string_wrappers
-                         ~group ["debug_regex"]
-                         []
+  let regex_switch = new bool_cp
+                         ~group ["regex";"switch"]
+                         ~short_name:"regex_switch"
+                         true
+                         "Use regex if is set to true" in
+  let regex_method = new list_cp string_wrappers
+                         ~group ["regex";"method"]
+                         ["auth_service"; "set_person"]
                          "Methods allow to print"
   in
   let _ = group#read config_file in
+  let _ = group#write config_file in
   let _ = debug := match debug_config#get with
   | 0 -> Off
   | 1 -> Error
   | 2 -> Warning
   | _ -> Info in
-  let _ = debug_regex := regex_config#get in
+  let _ = debug_regex := regex_method#get in
   let _ = Printf.printf "[init] init with debug %s\n" (string_of_debug !debug) in
   Printf.printf "[init] regex: %s\n"
                  (List.fold_left (fun i s -> s ^ " " ^ i) "" !debug_regex)
