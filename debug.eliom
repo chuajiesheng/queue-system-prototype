@@ -183,17 +183,19 @@ let compare ~meth ~name ~val1 ~val2 =
   compare_f ~meth:meth ~name:name ~func:compare ~val1:val1 ~val2:val2
 
 (* testing *)
+let test_eval_show = eval_show ~p1:(fun s -> s) ~p2:string_of_bool
+
 let in_debug_test =
   let s = "[auth_service] hello world" in
-  let res = in_debug s in
+  let res = test_eval_show in_debug s in
   print "test method: %b\n" res
 
 let in_debug_test_2 =
   let s = "[auth_services123] hello world" in
-  let res = in_debug s in
+  let res = test_eval_show in_debug s in
   print "fail test method: %b\n" res
 
 let in_debug_test_3 =
   let s = "[hello_world] hello world" in
-  let res = in_debug s in
+  let res = test_eval_show in_debug s in
   print "fail test method: %b\n" res
