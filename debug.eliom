@@ -136,8 +136,9 @@ let list ~to_str meth para list =
 
 (* trace functionality *)
 let eval_show ~p1 ~p2 f x =
-  let _ = value_label ~meth:"eval_show" ~para:"before" ~value:(p1 x) in
+
   let res = f x in
+  let _ = value_label ~meth:"eval_show" ~para:"before" ~value:(p1 x) in
   let _ = value_label ~meth:"eval_show" ~para:"after" ~value:(p2 res) in
   res
 
