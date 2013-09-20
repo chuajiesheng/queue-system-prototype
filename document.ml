@@ -12,7 +12,7 @@ let jquery_js = js_script
 
 let bootstrap_css = css_link
   (uri_of_string (function () ->
-    "//netdna.bootstrapcdn.com/bootstrap/3.0.0-rc1/css/bootstrap.min.css"))
+    "//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css"))
   ()
 
 let bootstrap_js = js_script
