@@ -17,7 +17,7 @@ let bootstrap_css = css_link
 
 let bootstrap_js = js_script
   (uri_of_string (function () ->
-    "//netdna.bootstrapcdn.com/bootstrap/3.0.0-rc1/js/bootstrap.min.js"))
+    "//netdna.bootstrapcdn.com/bootstrap/3.0.0/js/bootstrap.min.js"))
   ()
 
 let google_js = js_script
