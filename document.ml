@@ -15,6 +15,11 @@ let bootstrap_css = css_link
     "//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css"))
   ()
 
+let bootstrap_css_theme = css_link
+  (uri_of_string (function () ->
+    "//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap-theme.min.css"))
+  ()
+
 let bootstrap_js = js_script
   (uri_of_string (function () ->
     "//netdna.bootstrapcdn.com/bootstrap/3.0.0/js/bootstrap.min.js"))
@@ -57,5 +62,5 @@ let create_page mytitle mycontent =
   Lwt.return
     (html
        (head (title (pcdata mytitle))
-          [jquery_js; bootstrap_css; bootstrap_js; google_js])
+          [jquery_js; bootstrap_css; bootstrap_css_theme; bootstrap_js; google_js])
        (body ((navbar)::mycontent)))
