@@ -30,3 +30,6 @@ let get_manager () =
 
 let set_manager (manager : Memstore.manager) =
   Eliom_reference.set _manager (Some (manager))
+
+let discard () =
+  Eliom_state.discard ~scope:Eliom_common.default_session_scope ()
