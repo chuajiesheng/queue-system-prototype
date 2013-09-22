@@ -9,6 +9,14 @@ let get_person () =
     | None -> Debug.info "[get_person] retrieve no session" in
   Eliom_reference.get _person
 
+let get_person_safe () =
+  try
+    let p = get_person () in
+    p
+  with _ ->
+    let _ = Debug.info "[get_person_safe] exception" in
+    Lwt.return None
+
 let set_person (p : Memstore.person) =
   let _ = Debug.info "[set_person] %s session started" p#get_name in
   Eliom_reference.set _person (Some (p))
