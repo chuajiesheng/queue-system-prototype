@@ -25,8 +25,10 @@ let () = Queue_prototype_app.register
   )
 
 let () = Eliom_registration.Redirection.register
-  ~service:Services.auth_service
+           ~options:`Found
+           ~service:Services.auth_service
   (fun () (username, password) ->
+    let _ = Session.discard () in
     let hash s = Cryptokit.hash_string (Cryptokit.Hash.sha1 ()) s in
     let _ = Debug.value_label ~meth:"auth_service" ~para:"hash"
                               ~value:(Util.tohex (hash password)) in
