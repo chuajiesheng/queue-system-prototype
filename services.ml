@@ -16,7 +16,7 @@ let sign_up_service =
   Eliom_service.service ~path:["signup"] ~get_params:Eliom_parameter.unit ()
 
 let menu_service =
-  Eliom_service.service ~path:["menu"] ~get_params:Eliom_parameter.unit ()
+  Eliom_service.service ~path:["menu"] ~get_params:Eliom_parameter.(int "random") ()
 
 let provider_service =
   Eliom_service.service

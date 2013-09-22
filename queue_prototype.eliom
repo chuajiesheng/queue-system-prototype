@@ -51,7 +51,10 @@ let () = Eliom_registration.Redirection.register
                                 ~val2:(Util.hex (Sql.get res#password)) in
         let _ = Session.set_person (new Memstore.person id email name) in
         let _ = Debug.info "[auth_service] %s authenticated" email in
-        Lwt.return (Some(Services.menu_service))
+        let s = Eliom_service.preapply
+                  ~service:Services.menu_service
+                  (Random.int 9999) in
+        Lwt.return (Some(s))
       | _ ->
         Lwt.return None
       ) in
@@ -118,7 +121,9 @@ let () = Eliom_registration.Redirection.register
     let _ = Debug.value_label ~meth:"oauth_service" ~para:"name" ~value:name in
     let _ = Debug.value_label ~meth:"oauth_service" ~para:"id" ~value:id in
     let _ = oauthenticate_user ~email:email ~name:name ~pwd:id in
-    Lwt.return Services.menu_service
+    let s = Eliom_service.preapply ~service:Services.menu_service
+                                   (Random.int 9999) in
+    Lwt.return s
   )
 
 let () = Queue_prototype_app.register
@@ -129,7 +134,7 @@ let () = Queue_prototype_app.register
 
 let () = Queue_prototype_app.register
   ~service:Services.menu_service
-  (fun () () ->
+  (fun rand () ->
     (Lazy.force Pages.menu_page)
   )
 
