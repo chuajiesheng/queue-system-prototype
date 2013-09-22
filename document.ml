@@ -59,8 +59,18 @@ let navbar_logged_in user =
   the last element must be a list that why the []
 *)
 let create_page mytitle mycontent =
-  Lwt.return
-    (html
-       (head (title (pcdata mytitle))
-          [jquery_js; bootstrap_css; bootstrap_css_theme; bootstrap_js; google_js])
-       (body ((navbar)::mycontent)))
+  lwt person = Session.get_person_safe () in
+  match person with
+  | Some(p) ->
+     let _ = Debug.value_label ~meth:"create_page" ~para:"person" ~value:(p#get_name) in
+     Lwt.return
+       (html
+          (head (title (pcdata mytitle))
+                [jquery_js; bootstrap_css; bootstrap_css_theme; bootstrap_js; google_js])
+          (body ((navbar_logged_in (p#get_name))::mycontent)))
+  | None ->
+     Lwt.return
+       (html
+          (head (title (pcdata mytitle))
+                [jquery_js; bootstrap_css; bootstrap_css_theme; bootstrap_js; google_js])
+          (body ((navbar)::mycontent)))
