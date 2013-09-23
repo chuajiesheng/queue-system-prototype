@@ -16,7 +16,7 @@ let login_page =
       Services.auth_service Services.oauth_service Services.sign_up_service in
   Document.create_page title content
 
-let menu_page = lazy begin
+let menu_page () =
   let title = page_title "Provider List" in
   let process_provider id name  =
     tr [td [pcdata id];
@@ -44,7 +44,6 @@ let menu_page = lazy begin
         ~thead:(thead [header])
         [tbody p]]]  in
   Document.create_page title content
-end
 
 let provider_page (provider : Memstore.provider) person =
   let title = page_title (provider#get_name) in
