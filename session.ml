@@ -17,6 +17,9 @@ let get_person_safe () =
     let _ = Debug.info "[get_person_safe] exception" in
     Lwt.return None
 
+let check_person () =
+  get_person_safe ()
+
 let set_person (p : Memstore.person) =
   let _ = Debug.info "[set_person] %s session started" p#get_name in
   Eliom_reference.set _person (Some (p))
