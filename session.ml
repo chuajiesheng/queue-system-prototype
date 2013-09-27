@@ -36,4 +36,5 @@ let set_manager (manager : Memstore.manager) =
   Eliom_reference.set _manager (Some (manager))
 
 let discard () =
+  let _ = Debug.info "[discard] session discarded" in
   Eliom_state.discard ~scope:Eliom_common.default_session_scope ()
