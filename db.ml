@@ -42,6 +42,7 @@ let users = <:table< users (
   id integer NOT NULL DEFAULT(nextval $users_id_seq$),
   email text NOT NULL,
   name text NOT NULL,
+  mobile text NOT NULL,
   password text NOT NULL
 ) >>
 
@@ -80,18 +81,20 @@ let user_check email pwd =
   <:view< {id = user_.id;
            email = user_.email;
            name = user_.name;
+           mobile = user_.mobile;
            password = user_.password} |
            user_ in $users$;
            user_.email = $string:email$;
            user_.password = $string:pwd$; >>)
 
-let user_insert email name pwd =
+let user_insert email name mobile pwd =
   (get_db () >>= fun dbh ->
   Lwt_Query.query dbh
   <:insert< $users$ :=
     { id = nextval $users_id_seq$;
       email = $string:email$;
       name = $string:name$;
+      mobile = $string:mobile$;
       password = $string:pwd$; } >>)
 
 (* providers function *)

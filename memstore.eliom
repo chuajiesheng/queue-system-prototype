@@ -1,5 +1,5 @@
 {shared{
-       type json_queue_person = (string * int * string * string)
+       type json_queue_person = (string * int * string * string * string)
          deriving (Json)
 
        type message = (string * int * int)
@@ -7,14 +7,16 @@
        (* message, calling queue no, estimated waiting time *)
 }}
 
-class person id email name =
+class person id email name mobile =
 object
   val id : int = id
   val email : string = email
   val name : string = name
+  val mobile : string = mobile
   method get_id = id
   method get_email = email
   method get_name = name
+  method get_mobile = mobile
 end
 
 class manager id username name provider_id =
@@ -31,7 +33,7 @@ end
 
 class queue_person person queue_no =
 object
-  inherit person person#get_id person#get_email person#get_name
+  inherit person person#get_id person#get_email person#get_name person#get_mobile
   val queue_no : int = queue_no
   method get_queue_no = queue_no
 end
@@ -95,9 +97,9 @@ let table : (string, provider) Hashtbl.t =
 (* ----- rpc server function ----- *)
 let rpc_get_queue =
   server_function Json.t<json_queue_person>
-    (fun (provider_name, id, email, name) ->
+    (fun (provider_name, id, email, name, mobile) ->
       let _ = Debug.info "[rpc_get_queue] person %s (%s)" name email in
-      let person = new person id email name in
+      let person = new person id email name mobile in
       let _ =
         try
           let provider = Hashtbl.find table provider_name in
@@ -115,7 +117,7 @@ let rpc_get_queue =
 
 let rpc_call_queue =
   server_function Json.t<json_queue_person>
-    (fun (provider_name, id, email, name) ->
+    (fun (provider_name, id, email, name, mobile) ->
      let debug_value = Debug.value "rpc_call_queue" in
      let _ = debug_value "id" (string_of_int id) in
      let _ = Debug.info "[rpc_call_queue] calling #%d %s" id email in
@@ -159,7 +161,8 @@ let rpc_call_queue =
                 let url = "https://api.twilio.com/2010-04-01/Accounts/AC5e2655ca2e3ef552239c0f6c13cc28d0/SMS/Messages.xml" in
                 let http_user = "AC5e2655ca2e3ef552239c0f6c13cc28d0" in
                 let http_password = "60a255a9b7b1c5d7331f75c1ef27d30d" in
-                let data = [("From","+19543200809"); ("To", "+6597520245"); ("Body", "Hello! 9752 0245~")] in
+                let text = "Hello " ^ name ^ ", your queue# " ^ (string_of_int p#get_queue_no) ^ " is called." in
+                let data = [("From","+19543200809"); ("To", mobile); ("Body", text)] in
                 let _ = Ssl.init () in
                 let _ = Http_client.Convenience.configure_pipeline
                           (fun p ->
@@ -216,7 +219,7 @@ let rpc_call_queue =
 
 let rpc_remove_queue =
   server_function Json.t<json_queue_person>
-    (fun (provider_name, id, email, name) ->
+    (fun (provider_name, id, email, name, mobile) ->
      let _ = Debug.info "[rpc_remove_queue] removing #%d %s" id email  in
       let _ =
         try

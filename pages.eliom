@@ -54,6 +54,7 @@ let provider_page (provider : Memstore.provider) person =
   let person_id = person#get_id in
   let person_email = person#get_email in
   let person_name = person#get_name in
+  let person_mobile = person#get_mobile in
   let button =
     let queue_no = provider#check_if_exist person in
     if queue_no <= Constant.starting_queue_no then
@@ -74,7 +75,7 @@ let provider_page (provider : Memstore.provider) person =
           (fun _ _ ->
             let _ = Lwt.bind
               (%Memstore.rpc_get_queue
-                  (%provider_name, %person_id, %person_email, %person_name)) in
+                  (%provider_name, %person_id, %person_email, %person_name, %person_mobile)) in
             let _ = Eliom_client.change_page
               ~service:%Services.provider_service %provider_name () in
             Lwt.return ())
@@ -108,6 +109,7 @@ let manager_page provider manager =
       let person_id = head#get_id in
       let person_email = head#get_email in
       let person_name = head#get_name in
+      let person_mobile = head#get_mobile in
       let button_call = button ~a:[Bootstrap.btn; Bootstrap.btn_default]
         ~button_type:`Button [pcdata "Call"] in
       let _ =
@@ -122,7 +124,7 @@ let manager_page provider manager =
                  let _ = Lwt.bind
                            (%Memstore.rpc_call_queue
                                (%provider_name, %person_id,
-                                %person_email, %person_name)) in
+                                %person_email, %person_name, %person_mobile)) in
                  let _ = Eliom_client.change_page
                            ~service:%Services.manager_service %provider_name () in
                  Lwt.return ())
@@ -141,7 +143,7 @@ let manager_page provider manager =
                   let _ = Lwt.bind
                     (%Memstore.rpc_remove_queue
                         (%provider_name, %person_id,
-                         %person_email, %person_name)) in
+                         %person_email, %person_name, %person_mobile)) in
                   let _ = Eliom_client.change_page
                     ~service:%Services.manager_service %provider_name () in
                   Lwt.return ())

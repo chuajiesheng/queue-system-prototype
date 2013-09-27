@@ -39,6 +39,7 @@ let () = Eliom_registration.Redirection.register
         let id = Int32.to_int (Sql.get res#id) in
         let email = Sql.get res#email in
         let name = Sql.get res#name in
+        let mobile = Sql.get res#mobile in
         let _ = Debug.compare_f ~meth:"auth_service"
                                 ~name:"password hex hash"
                                 ~func:String.compare
@@ -49,7 +50,7 @@ let () = Eliom_registration.Redirection.register
                                 ~func:String.compare
                                 ~val1:(hash password)
                                 ~val2:(Util.hex (Sql.get res#password)) in
-        let _ = Session.set_person (new Memstore.person id email name) in
+        let _ = Session.set_person (new Memstore.person id email name mobile) in
         let _ = Debug.info "[auth_service] %s authenticated" email in
         let s = Services.menu_service in
         Lwt.return (Some(s))
@@ -63,6 +64,7 @@ let () = Eliom_registration.Redirection.register
         let id = Int32.to_int (Sql.get res#id) in
         let username = Sql.get res#username in
         let name = Sql.get res#name in
+        let mobile = "" in
         let provider_id = Int32.to_int (Sql.get res#provider_id) in
         let provider_name = Sql.get res#provider_name in
         let _ = Debug.compare_f ~meth:"auth_service"
@@ -76,7 +78,7 @@ let () = Eliom_registration.Redirection.register
                                 ~val1:(hash password)
                                 ~val2:(Util.hex (Sql.get res#password)) in
         let _ = Session.set_person
-          (new Memstore.person id username name) in
+          (new Memstore.person id username name mobile) in
         let _ = Session.set_manager
           (new Memstore.manager id username name provider_id) in
         let _ = Debug.info "[auth_service] %s authenticated" username in
@@ -93,7 +95,7 @@ let () = Eliom_registration.Redirection.register
     | (_, _) -> Lwt.return Services.login_service
   )
 
-let rec oauthenticate_user ~email ~name ~pwd =
+let rec oauthenticate_user ~email ~name ~mobile ~pwd =
   let hash s = Cryptokit.hash_string (Cryptokit.Hash.sha1()) s in
   Db.user_check (String.escaped email) (Util.tohex (hash pwd)) >>=
     (function
@@ -101,14 +103,15 @@ let rec oauthenticate_user ~email ~name ~pwd =
       let u_id = Int32.to_int (Sql.get res#id) in
       let email = Sql.get res#email in
       let name = Sql.get res#name in
-      let _ = Session.set_person (new Memstore.person u_id email name) in
+      let mobile = Sql.get res#mobile in
+      let _ = Session.set_person (new Memstore.person u_id email name mobile) in
       let _ = Debug.info "[oauth_service] %s authenticated" email in
       Lwt.return ()
     | _ ->
-      Db.user_insert email name (Util.tohex (hash pwd)) >>=
+      Db.user_insert email name mobile (Util.tohex (hash pwd)) >>=
         (function () ->
           let _ = Debug.info "[oauth_service] %s registered" email in
-          let _ = oauthenticate_user ~email:email ~name:name ~pwd:pwd in
+          let _ = oauthenticate_user ~email:email ~name:name ~mobile:mobile ~pwd:pwd in
           Lwt.return ()
         ))
 
