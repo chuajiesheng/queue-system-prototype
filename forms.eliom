@@ -56,8 +56,9 @@ let oauth_button_action = {{
       let _ = Firebug.console##log_2(Js.string "[id]", resp##id) in
       let _ = Firebug.console##log_2(Js.string "[email]", resp##email) in
       let _ = Firebug.console##log_2(Js.string "[name]", resp##name) in
+      let mobile = Dom_html.window##prompt ((Js.string "Your mobile number?"), (Js.string "")) in
       ignore (Eliom_client.change_page
-                 ~service:%Services.oauth_service () (email, (name, id)))
+                 ~service:%Services.oauth_service () (email, (name, ((Js.to_string mobile), id))))
     in
 
     let make_api_call () =

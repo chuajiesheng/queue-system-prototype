@@ -97,7 +97,7 @@ let () = Eliom_registration.Redirection.register
 
 let rec oauthenticate_user ~email ~name ~mobile ~pwd =
   let hash s = Cryptokit.hash_string (Cryptokit.Hash.sha1()) s in
-  Db.user_check (String.escaped email) (Util.tohex (hash pwd)) >>=
+  lwt res = Db.user_check (String.escaped email) (Util.tohex (hash pwd)) >>=
     (function
     | res::_ ->
       let u_id = Int32.to_int (Sql.get res#id) in
@@ -105,18 +105,19 @@ let rec oauthenticate_user ~email ~name ~mobile ~pwd =
       let name = Sql.get res#name in
       let mobile = Sql.get res#mobile in
       let person = new Memstore.person u_id email name mobile in
-      let _ = Session.set_person person in
       let _ = Debug.info "[oauth_service] %s authenticated" email in
-      Lwt.return ()
+      Lwt.return (Some(person))
     | _ ->
        let _ = Debug.info "[oauth_service] new oauth user %s" email in
        Db.user_insert email name mobile (Util.tohex (hash pwd)) >>=
          (function () ->
                    let _ = Debug.info "[oauth_service] %s registered" email in
-                   let res = oauthenticate_user ~email:email ~name:name ~mobile:mobile ~pwd:pwd in
-                   Lwt.return ()
+                   lwt res = oauthenticate_user ~email:email ~name:name ~mobile:mobile ~pwd:pwd in
+                   Lwt.return res
          )
-    )
+    ) in
+  Lwt.return res
+
 
 let () = Eliom_registration.Redirection.register
   ~service:Services.oauth_service
@@ -125,9 +126,12 @@ let () = Eliom_registration.Redirection.register
    let _ = Debug.value_label ~meth:"oauth_service" ~para:"email" ~value:email in
    let _ = Debug.value_label ~meth:"oauth_service" ~para:"name" ~value:name in
    let _ = Debug.value_label ~meth:"oauth_service" ~para:"id" ~value:id in
-   let _ = oauthenticate_user ~email:email ~name:name ~mobile:mobile ~pwd:id in
-   let s = Services.menu_service in
-   Lwt.return s
+   lwt res = oauthenticate_user ~email:email ~name:name ~mobile:mobile ~pwd:id in
+   match res with
+     | Some(p) ->
+        let _ = Session.set_person p in
+        Lwt.return Services.menu_service
+     | _ -> Lwt.return Services.login_service
   )
 
 let () = Queue_prototype_app.register
