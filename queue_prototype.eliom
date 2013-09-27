@@ -104,26 +104,30 @@ let rec oauthenticate_user ~email ~name ~mobile ~pwd =
       let email = Sql.get res#email in
       let name = Sql.get res#name in
       let mobile = Sql.get res#mobile in
-      let _ = Session.set_person (new Memstore.person u_id email name mobile) in
+      let person = new Memstore.person u_id email name mobile in
+      let _ = Session.set_person person in
       let _ = Debug.info "[oauth_service] %s authenticated" email in
       Lwt.return ()
     | _ ->
-      Db.user_insert email name mobile (Util.tohex (hash pwd)) >>=
-        (function () ->
-          let _ = Debug.info "[oauth_service] %s registered" email in
-          let _ = oauthenticate_user ~email:email ~name:name ~mobile:mobile ~pwd:pwd in
-          Lwt.return ()
-        ))
+       let _ = Debug.info "[oauth_service] new oauth user %s" email in
+       Db.user_insert email name mobile (Util.tohex (hash pwd)) >>=
+         (function () ->
+                   let _ = Debug.info "[oauth_service] %s registered" email in
+                   let res = oauthenticate_user ~email:email ~name:name ~mobile:mobile ~pwd:pwd in
+                   Lwt.return ()
+         )
+    )
 
 let () = Eliom_registration.Redirection.register
   ~service:Services.oauth_service
-  (fun () (email, (name, id)) ->
-    let _ = Debug.value_label ~meth:"oauth_service" ~para:"email" ~value:email in
-    let _ = Debug.value_label ~meth:"oauth_service" ~para:"name" ~value:name in
-    let _ = Debug.value_label ~meth:"oauth_service" ~para:"id" ~value:id in
-    let _ = oauthenticate_user ~email:email ~name:name ~pwd:id in
-    let s = Services.menu_service in
-    Lwt.return s
+  (fun () (email, (name, (mobile, id))) ->
+   let _ = Session.discard () in
+   let _ = Debug.value_label ~meth:"oauth_service" ~para:"email" ~value:email in
+   let _ = Debug.value_label ~meth:"oauth_service" ~para:"name" ~value:name in
+   let _ = Debug.value_label ~meth:"oauth_service" ~para:"id" ~value:id in
+   let _ = oauthenticate_user ~email:email ~name:name ~mobile:mobile ~pwd:id in
+   let s = Services.menu_service in
+   Lwt.return s
   )
 
 let () = Queue_prototype_app.register
