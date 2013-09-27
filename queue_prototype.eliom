@@ -105,18 +105,19 @@ let rec oauthenticate_user ~email ~name ~mobile ~pwd =
       let name = Sql.get res#name in
       let mobile = Sql.get res#mobile in
       let person = new Memstore.person u_id email name mobile in
+      let _ = Session.set_person person in
       let _ = Debug.info "[oauth_service] %s authenticated" email in
-      Lwt.return (Some(person))
+      Lwt.return ()
     | _ ->
        let _ = Debug.info "[oauth_service] new oauth user %s" email in
        Db.user_insert email name mobile (Util.tohex (hash pwd)) >>=
          (function () ->
                    let _ = Debug.info "[oauth_service] %s registered" email in
                    lwt res = oauthenticate_user ~email:email ~name:name ~mobile:mobile ~pwd:pwd in
-                   Lwt.return res
+                   Lwt.return ()
          )
     ) in
-  Lwt.return res
+    Lwt.return ()
 
 
 let () = Eliom_registration.Redirection.register
@@ -126,12 +127,15 @@ let () = Eliom_registration.Redirection.register
    let _ = Debug.value_label ~meth:"oauth_service" ~para:"email" ~value:email in
    let _ = Debug.value_label ~meth:"oauth_service" ~para:"name" ~value:name in
    let _ = Debug.value_label ~meth:"oauth_service" ~para:"id" ~value:id in
-   lwt res = oauthenticate_user ~email:email ~name:name ~mobile:mobile ~pwd:id in
-   match res with
+   lwt _ = oauthenticate_user ~email:email ~name:name ~mobile:mobile ~pwd:id in
+   lwt session = Session.get_person_safe () in
+   match session with
      | Some(p) ->
-        let _ = Session.set_person p in
+        let _ = Debug.info "[oauth_service] existed" in
         Lwt.return Services.menu_service
-     | _ -> Lwt.return Services.login_service
+     | None ->
+        let _ = Debug.info "[oauth_service] empty" in
+        Lwt.return Services.login_service
   )
 
 let () = Queue_prototype_app.register
