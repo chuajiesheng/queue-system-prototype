@@ -156,16 +156,20 @@ let rpc_call_queue =
               let _ = Debug.info "[display] call queue no #%d"
                                  p#get_queue_no in
               let _ =
-                let _ = Ssl.init() in
-                let _ = Http_client.Convenience.configure_pipeline in
-                let _ = (fun p ->
-                         (* Https_client located in equeue-ssl package *)
-                         let ctx = Ssl.create_context Ssl.TLSv1 Ssl.Client_context in
-                         let tct = Https_client.https_transport_channel_type ctx in
-                         p # configure_transport Http_client.https_cb_id tct
-                        ) in
                 let url = "https://api.twilio.com/2010-04-01/Accounts/AC5e2655ca2e3ef552239c0f6c13cc28d0/SMS/Messages.xml" in
-                let data = [("data","From=%2B19543200809&To=%2B6597520245&Body=hello")] in
+                let http_user = "AC5e2655ca2e3ef552239c0f6c13cc28d0" in
+                let http_password = "60a255a9b7b1c5d7331f75c1ef27d30d" in
+                let data = [("From","+19543200809"); ("To", "+6597520245"); ("Body", "Hello! 9752 0245~")] in
+                let _ = Ssl.init () in
+                let _ = Http_client.Convenience.configure_pipeline
+                          (fun p ->
+                           (* Https_client located in equeue-ssl package *)
+                           let ctx = Ssl.create_context Ssl.TLSv1 Ssl.Client_context in
+                           let tct = Https_client.https_transport_channel_type ctx in
+                           p # configure_transport Http_client.https_cb_id tct
+                          ) in
+                let _ = Http_client.Convenience.http_user := http_user in
+                let _ = Http_client.Convenience.http_password := http_password in
                 let msg () =
                   try
                     let _ = Debug.info "[display] do http post" in
