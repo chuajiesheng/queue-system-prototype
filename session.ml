@@ -22,7 +22,8 @@ let check_person () =
 
 let set_person (p : Memstore.person) =
   let _ = Debug.info "[set_person] %s session started" p#get_name in
-  Eliom_reference.set _person (Some (p))
+  let _ = Eliom_reference.set _person (Some (p)) in
+  check_person ()
 
 let _manager =
   Eliom_reference.eref
