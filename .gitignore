@@ -41,3 +41,4 @@ local
 META
 .depend
 debug.config
+sms.config
