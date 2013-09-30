@@ -32,3 +32,16 @@ let sms_check () =
   ()
 
 let start = sms_check ()
+
+let https_init () =
+  let _ = Ssl.init () in
+  let _ = Http_client.Convenience.configure_pipeline
+            (fun p ->
+             (* Https_client located in equeue-ssl package *)
+             let ctx = Ssl.create_context Ssl.TLSv1 Ssl.Client_context in
+             let tct = Https_client.https_transport_channel_type ctx in
+             p # configure_transport Http_client.https_cb_id tct
+            ) in
+  let _ = Http_client.Convenience.http_user := http_user in
+  let _ = Http_client.Convenience.http_password := http_password in
+  ()
