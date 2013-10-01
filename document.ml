@@ -5,26 +5,6 @@ let brand = "oQueue"
 
 let static s = make_uri ~service:(Eliom_service.static_dir ()) s
 
-let jquery_js = js_script
-  (uri_of_string (function () ->
-   "//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"))
-  ()
-
-let bootstrap_css = css_link
-  (uri_of_string (function () ->
-    "//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css"))
-  ()
-
-let bootstrap_css_theme = css_link
-  (uri_of_string (function () ->
-    "//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap-theme.min.css"))
-  ()
-
-let bootstrap_js = js_script
-  (uri_of_string (function () ->
-    "//netdna.bootstrapcdn.com/bootstrap/3.0.0/js/bootstrap.min.js"))
-  ()
-
 let google_js = js_script
   (uri_of_string (function () ->
    "https://apis.google.com/js/client.js"))
@@ -66,11 +46,13 @@ let create_page mytitle mycontent =
      Lwt.return
        (html
           (head (title (pcdata mytitle))
-                [jquery_js; bootstrap_css; bootstrap_css_theme; bootstrap_js; google_js])
+                [Uri.JQuery.Min.v2; Uri.Css.Min.v3; Uri.Theme.Min.v3; Uri.Js.Min.v3;
+                 google_js])
           (body ((navbar_logged_in (p#get_name))::mycontent)))
   | None ->
      Lwt.return
        (html
           (head (title (pcdata mytitle))
-                [jquery_js; bootstrap_css; bootstrap_css_theme; bootstrap_js; google_js])
+                [Uri.JQuery.Min.v2; Uri.Css.Min.v3; Uri.Theme.Min.v3; Uri.Js.Min.v3;
+                 google_js])
           (body ((navbar)::mycontent)))
