@@ -158,7 +158,7 @@ let rpc_call_queue =
               let _ = Debug.info "[display] call queue no #%d"
                                  p#get_queue_no in
               let _ =
-                let text = "Hello " ^ name ^ ", your queue# " ^ (string_of_int p#get_queue_no) ^ " at " ^ provider_name ^ " is called." in
+                let text = "Hello " ^ name ^ ", your queue#" ^ (string_of_int p#get_queue_no) ^ " at " ^ provider_name ^ " is called." in
                 let data = [("From","+19543200809"); ("To", mobile); ("Body", text)] in
                 let msg () = Sms.send_sms data
                 in
@@ -173,8 +173,15 @@ let rpc_call_queue =
          let _ = match (retrieve main id) with
            | Some(p), q ->
               let _ = provider#set_main_queue q in
-              let _ = Debug.info "[rpc_call_queue] queue no #%d arrived"
+              let _ = Debug.info "[rpc_call_queue] requesting queue no #%d to come to location"
                                  p#get_queue_no in
+              let _ =
+                let text = "Hello " ^ name ^ ", it's your turn soon (q#" ^ (string_of_int p#get_queue_no) ^ "). Please proceed to " ^ provider_name ^ "." in
+                let data = [("From","+19543200809"); ("To", mobile); ("Body", text)] in
+                let msg () = Sms.send_sms data
+                in
+                Debug.value_label ~meth:"display" ~para:"msg" ~value:(msg ()) in
+
               let l = provider#get_arrived_queue in
               let rec slot_in person queue =
                 match queue with
