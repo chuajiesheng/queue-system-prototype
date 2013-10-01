@@ -158,7 +158,7 @@ let rpc_call_queue =
               let _ = Debug.info "[display] call queue no #%d"
                                  p#get_queue_no in
               let _ =
-                let text = "Hello " ^ name ^ ", your queue# " ^ (string_of_int p#get_queue_no) ^ " is called." in
+                let text = "Hello " ^ name ^ ", your queue# " ^ (string_of_int p#get_queue_no) ^ " at " ^ provider_name ^ " is called." in
                 let data = [("From","+19543200809"); ("To", mobile); ("Body", text)] in
                 let msg () = Sms.send_sms data
                 in
