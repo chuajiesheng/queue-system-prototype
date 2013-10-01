@@ -42,6 +42,6 @@ let https_init () =
              let tct = Https_client.https_transport_channel_type ctx in
              p # configure_transport Http_client.https_cb_id tct
             ) in
-  let _ = Http_client.Convenience.http_user := http_user in
-  let _ = Http_client.Convenience.http_password := http_password in
+  let _ = Http_client.Convenience.http_user := !http_user in
+  let _ = Http_client.Convenience.http_password := !http_password in
   ()
