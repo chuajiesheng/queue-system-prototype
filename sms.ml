@@ -45,3 +45,16 @@ let https_init () =
   let _ = Http_client.Convenience.http_user := !http_user in
   let _ = Http_client.Convenience.http_password := !http_password in
   ()
+
+let send_sms data =
+  let _ = sms_check () in
+  let _ = https_init () in
+  let print = Debug.construct ~level:Debug.Info ~meth:"send_sms" in
+  try
+    let _ = print "start http post" in
+    (* Http_client located in netclient *)
+    Http_client.Convenience.http_post !url data
+  with
+    Http_client.Http_error (id, msg) ->
+    let _ = print "exception occured" in
+    msg
