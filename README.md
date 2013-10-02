@@ -5,10 +5,20 @@ A prototype for a online queue management system,
 it allow users to request for a queue number at the comfort of their homes.
 The system would notified the users when it is soon their turn so they could head down to the location.
 
+Dependency
+----------
+1. [macaque](http://ocsigen.org/macaque/)
+2. [cryptokit](http://forge.ocamlcore.org/projects/cryptokit/)
+3. [config-file](http://config-file.forge.ocamlcore.org/)
+4. [netclient](http://projects.camlcity.org/projects/ocamlnet.html)
+5. [equeue-ssl](http://projects.camlcity.org/projects/ocamlnet.html)
+6. [eliom-bootstrap](http://github.com/chuajiesheng/eliom-bootstrap)
+7. [ogoogle-api](http://github.com/chuajiesheng/ogoogle-api)
+
 Focus
 -----
 1. Reduce waiting time when visiting places such as a clinic
-2. Capture queue statistic to improve the current service standards
+2. Using SMS to alert users to proceed to destination or to a counter
 
 Instructions
 ------------
