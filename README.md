@@ -34,6 +34,19 @@ Generally, you can compile it and run ocsigenserver on it by
   $ make test.byte (or test.opt)
 See below for other useful targets for make.
 
+Sample Configuration Files
+-------------------
+1. debug.config
+
+        (* Default debug level. Off = 0 | Error = 1 | Warning = 2 | Info > 2 *)
+        debug_config = 3
+        regex = {
+          (* Use regex if is set to true *)
+          switch = false
+          (* Methods allow to print *)
+          method = [auth_service; set_person; manager_service]
+        }
+
 Generated files
 ---------------
 
