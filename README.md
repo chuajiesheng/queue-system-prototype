@@ -47,6 +47,16 @@ Sample Configuration Files
           method = [auth_service; set_person; manager_service]
         }
 
+2. sms.config
+
+        (* Twilio API URL *)
+        url = "https://api.twilio.com/2010-04-01/Accounts/[account sid]/SMS/Messages.json"
+        (* Twilio account SID *)
+        http_user = "[account sid]"
+        (* Twilio auth token *)
+        http_password = "[auth token]"
+        }
+
 Generated files
 ---------------
 
