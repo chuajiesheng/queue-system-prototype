@@ -37,6 +37,7 @@ See below for other useful targets for make.
 Sample Configuration Files
 -------------------
 1. debug.config
+   this file controls how the debug message would be printer
 
         (* Default debug level. Off = 0 | Error = 1 | Warning = 2 | Info > 2 *)
         debug_config = 3
@@ -48,6 +49,7 @@ Sample Configuration Files
         }
 
 2. sms.config
+   this file controls the access to twilio api
 
         (* Twilio API URL *)
         url = "https://api.twilio.com/2010-04-01/Accounts/[account sid]/SMS/Messages.json"
