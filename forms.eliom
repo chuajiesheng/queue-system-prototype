@@ -12,6 +12,18 @@ let username_box username = [
         ~name:username ()];
 ]
 
+let mobile_box mobile = [
+  label
+    ~a:[Bootstrap.col_lg 4; Bootstrap.control_label; (a_for mobile)]
+    [pcdata "Mobile No: "];
+  div
+    ~a:[Bootstrap.col_lg 8] [
+      string_input
+        ~a:[Bootstrap.form_control]
+        ~input_type:`Text
+        ~name:mobile ()];
+]
+
 let password_box password = [
   label
     ~a:[Bootstrap.col_lg 4; Bootstrap.control_label; (a_for password)]
@@ -116,12 +128,19 @@ let login_box auth_service oauth_service create_service =
               [pcdata "Create an account"] ()]
       ]]
 
-(* TODO: to be implemented *)
-let sign_up_box sign_up_service =
-  [post_form ~service:sign_up_service
-      (fun (username, password) ->
-        [fieldset [
-          div (username_box username);
-          div (password_box password);
-          div (submit_button "Create Account")
-        ]]) ();]
+let sign_up_box create_account_service =
+  [div
+     ~a:[Bootstrap.form_horizontal; Bootstrap.col_offset 3; Bootstrap.col_lg 6] [
+       post_form
+         ~service:create_account_service
+                 (fun (username, mobile, password, password2) ->
+                  [fieldset [
+                       h3 [pcdata "Create an Account"];
+                       br ();
+                       div ~a:[Bootstrap.form_group; Bootstrap.row] (username_box username);
+                       div ~a:[Bootstrap.form_group; Bootstrap.row] (mobile_box mobile);
+                       div ~a:[Bootstrap.form_group; Bootstrap.row] (password_box password);
+                       div ~a:[Bootstrap.form_group; Bootstrap.row] (password_box password2);
+                       div ~a:[Bootstrap.form_group; Bootstrap.row] (submit_button "Create Account");
+                 ]]) ();
+  ]]

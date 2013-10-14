@@ -16,6 +16,12 @@ let login_page =
       Services.auth_service Services.oauth_service Services.sign_up_service in
   Document.create_page title content
 
+let register_page () =
+  let title = page_title "Create an Account" in
+  let content =
+    Forms.sign_up_box Services.create_account_service in
+  Document.create_page title content
+
 let menu_page () =
   let title = page_title "Provider List" in
   let process_provider id name  =

@@ -144,6 +144,11 @@ let () = Queue_prototype_app.register
     Pages.login_page
   )
 
+let () = Eliom_registration.Redirection.register
+           ~options:`Found
+           ~service:Service.create_account_service
+           (fun () (username, mobile, password, password2) -> ())
+
 let () = Queue_prototype_app.register
   ~service:Services.menu_service
   (fun () () ->
