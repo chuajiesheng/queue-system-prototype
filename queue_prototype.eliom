@@ -141,13 +141,19 @@ let () = Eliom_registration.Redirection.register
 let () = Queue_prototype_app.register
   ~service:Services.sign_up_service
   (fun () () ->
-    Pages.login_page
+    Pages.register_page ()
   )
 
 let () = Eliom_registration.Redirection.register
            ~options:`Found
-           ~service:Service.create_account_service
-           (fun () (username, mobile, password, password2) -> ())
+           ~service:Services.create_account_service
+           (fun () (username, (mobile, (password, password2))) ->
+            let debug = Debug.value_label ~meth:"create_account_service" in
+            let _ = debug ~para:"username" ~value:username in
+            let _ = debug ~para:"mobile" ~value:mobile in
+            let _ = debug ~para:"password" ~value:password in
+            let _ = debug ~para:"password2" ~value:password2 in
+            Lwt.return Services.menu_service)
 
 let () = Queue_prototype_app.register
   ~service:Services.menu_service

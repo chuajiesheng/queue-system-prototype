@@ -18,11 +18,13 @@ let sign_up_service =
   Eliom_service.service ~path:["signup"] ~get_params:Eliom_parameter.unit ()
 
 let create_account_service =
-  Eliom_service.post_coservice'
+  Eliom_service.post_coservice
+    ~fallback:login_service
     ~name:"create_account_service"
     ~post_params:Eliom_parameter.(string "username" **
                                     (string "mobile" **
                                        (string "password" ** string "password2"))) ()
+
 let menu_service =
   Eliom_service.service ~path:["menu"] ~get_params:Eliom_parameter.unit ()
 

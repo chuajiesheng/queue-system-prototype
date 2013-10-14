@@ -133,7 +133,7 @@ let sign_up_box create_account_service =
      ~a:[Bootstrap.form_horizontal; Bootstrap.col_offset 3; Bootstrap.col_lg 6] [
        post_form
          ~service:create_account_service
-                 (fun (username, mobile, password, password2) ->
+                 (fun (username, (mobile, (password, password2))) ->
                   [fieldset [
                        h3 [pcdata "Create an Account"];
                        br ();
