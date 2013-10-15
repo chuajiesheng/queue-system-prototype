@@ -12,6 +12,18 @@ let username_box username = [
         ~name:username ()];
 ]
 
+let name_box name = [
+  label
+    ~a:[Bootstrap.col_lg 4; Bootstrap.control_label; (a_for name)]
+    [pcdata "Name: "];
+  div
+    ~a:[Bootstrap.col_lg 8] [
+      string_input
+        ~a:[Bootstrap.form_control]
+        ~input_type:`Text
+        ~name:name ()];
+]
+
 let mobile_box mobile = [
   label
     ~a:[Bootstrap.col_lg 4; Bootstrap.control_label; (a_for mobile)]
