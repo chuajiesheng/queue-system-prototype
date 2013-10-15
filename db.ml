@@ -87,6 +87,14 @@ let user_check email pwd =
            user_.email = $string:email$;
            user_.password = $string:pwd$; >>)
 
+let user_exists email =
+  (get_db () >>= fun dbh ->
+  Lwt_Query.view dbh
+  <:view< { id = user_.id;
+            email = user_.email} |
+            user_ in $users$;
+            user_.email = $string:email$; >>)
+
 let user_insert email name mobile pwd =
   (get_db () >>= fun dbh ->
   Lwt_Query.query dbh
