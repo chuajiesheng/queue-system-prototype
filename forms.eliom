@@ -145,11 +145,12 @@ let sign_up_box create_account_service =
      ~a:[Bootstrap.form_horizontal; Bootstrap.col_offset 3; Bootstrap.col_lg 6] [
        post_form
          ~service:create_account_service
-                 (fun (username, (mobile, (password, password2))) ->
+                 (fun (username, (name, (mobile, (password, password2)))) ->
                   [fieldset [
                        h3 [pcdata "Create an Account"];
                        br ();
                        div ~a:[Bootstrap.form_group; Bootstrap.row] (username_box username);
+                       div ~a:[Bootstrap.form_group; Bootstrap.row] (name_box name);
                        div ~a:[Bootstrap.form_group; Bootstrap.row] (mobile_box mobile);
                        div ~a:[Bootstrap.form_group; Bootstrap.row] (password_box password);
                        div ~a:[Bootstrap.form_group; Bootstrap.row] (password_box password2);

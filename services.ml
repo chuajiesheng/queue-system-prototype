@@ -22,8 +22,9 @@ let create_account_service =
     ~fallback:login_service
     ~name:"create_account_service"
     ~post_params:Eliom_parameter.(string "username" **
-                                    (string "mobile" **
-                                       (string "password" ** string "password2"))) ()
+                                    (string "name" **
+                                       (string "mobile" **
+                                          (string "password" ** string "password2")))) ()
 
 let menu_service =
   Eliom_service.service ~path:["menu"] ~get_params:Eliom_parameter.unit ()

@@ -147,13 +147,40 @@ let () = Queue_prototype_app.register
 let () = Eliom_registration.Redirection.register
            ~options:`Found
            ~service:Services.create_account_service
-           (fun () (username, (mobile, (password, password2))) ->
+           (fun () (username, (name, (mobile, (password, password2)))) ->
             let debug = Debug.value_label ~meth:"create_account_service" in
+            let print = Debug.construct ~level:Debug.Info ~meth:"create_account_service" in
             let _ = debug ~para:"username" ~value:username in
+            let _ = debug ~para:"name" ~value:name in
             let _ = debug ~para:"mobile" ~value:mobile in
             let _ = debug ~para:"password" ~value:password in
             let _ = debug ~para:"password2" ~value:password2 in
-            Lwt.return Services.menu_service)
+            let check_pw next =
+              if (String.compare password password2) != 0 then
+                let _ = print "Password do not match" in
+                Lwt.return Services.sign_up_service
+              else
+                next
+            in
+            let check_username_exist next =
+              Db.user_exists username >>=
+                (function
+                  | res::_ ->
+                     let _ = print "Username conflict with existing user" in
+                     Lwt.return Services.login_service
+                  | _ -> next
+                ) in
+            let insert_user username name mobile password next =
+              let hash s = Cryptokit.hash_string (Cryptokit.Hash.sha1 ()) s in
+              Db.user_insert
+                (String.escaped username)
+                (String.escaped name)
+                mobile
+                (Util.tohex (hash password))
+              >>=
+                (function () -> next) in
+            let next = Lwt.return Services.login_service in
+            check_pw (check_username_exist (insert_user username name mobile password next)))
 
 let () = Queue_prototype_app.register
   ~service:Services.menu_service
