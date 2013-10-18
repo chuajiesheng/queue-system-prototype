@@ -144,6 +144,10 @@ let () = Queue_prototype_app.register
     Pages.register_page ()
   )
 
+let () = Queue_prototype_app.register
+           ~service:Services.fb_login_service
+           (fun () () -> Pages.register_page ())
+
 let () = Eliom_registration.Redirection.register
            ~options:`Found
            ~service:Services.create_account_service

@@ -26,6 +26,9 @@ let create_account_service =
                                        (string "mobile" **
                                           (string "password" ** string "password2")))) ()
 
+let fb_login_service =
+  Eliom_service.service ~path:["fb"] ~get_params:Eliom_parameter.unit ()
+
 let menu_service =
   Eliom_service.service ~path:["menu"] ~get_params:Eliom_parameter.unit ()
 
