@@ -118,27 +118,32 @@ let oauth_button_action = {{
 
 let oauth_button =
   button ~a:[Bootstrap.btn; Bootstrap.btn_default;
-             Bootstrap.btn_lg; Bootstrap.btn_block;
              Eliom_content.Html5.D.a_onclick oauth_button_action]
-    ~button_type:`Button [pcdata "Login using Google"]
+    ~button_type:`Button [pcdata "Login with Google"]
+
+let fb_button =
+  a ~a:[Bootstrap.btn; Bootstrap.btn_default] ~service:Services.fb_login_service
+    [pcdata "Login with Facebook"] ()
 
 let login_box auth_service oauth_service create_service =
-  [div
-      ~a:[Bootstrap.form_horizontal; Bootstrap.col_offset 3; Bootstrap.col_lg 6] [
-        post_form
-          ~service:auth_service
-          (fun (username, password) ->
+  [div ~a:[Bootstrap.form_horizontal; Bootstrap.col_offset 3; Bootstrap.col_lg 6] [
+         post_form
+           ~service:auth_service
+           (fun (username, password) ->
             [fieldset [
-              h3 [pcdata "Login"];
-              br ();
-              div ~a:[Bootstrap.form_group; Bootstrap.row] (username_box username);
-              div ~a:[Bootstrap.form_group; Bootstrap.row] (password_box password);
-              div ~a:[Bootstrap.form_group; Bootstrap.row] (submit_button "Login");
-            ]]) ();
-        p [oauth_button];
-        p [a create_service
-              [pcdata "Create an account"] ()]
-      ]]
+                 h3 [pcdata "Login"];
+                 br ();
+                 div ~a:[Bootstrap.form_group; Bootstrap.row] (username_box username);
+                 div ~a:[Bootstrap.form_group; Bootstrap.row] (password_box password);
+                 div ~a:[Bootstrap.form_group; Bootstrap.row] (submit_button "Login");
+           ]]) (); ];
+   div ~a:[Bootstrap.form_horizontal; Bootstrap.col_offset 3; Bootstrap.col_lg 6] [
+         div ~a:[Bootstrap.btn_group] [
+               oauth_button;
+               fb_button;
+               a ~a:[Bootstrap.btn; Bootstrap.btn_default] ~service:create_service
+                 [pcdata "Create an account"] ()
+       ]];]
 
 let sign_up_box create_account_service =
   [div
