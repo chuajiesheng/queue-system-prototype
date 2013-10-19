@@ -1,4 +1,5 @@
-open Eliom_content.Html5.D
+open Eliom_content
+open Html5.D
 
 let username_box username = [
   label
