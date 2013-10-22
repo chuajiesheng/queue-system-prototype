@@ -22,6 +22,22 @@ let register_page () =
     Forms.sign_up_box Services.create_account_service in
   Document.create_page title content
 
+let fb_login_page () =
+  let title = page_title "Login with Facebook" in
+  let fb_script =
+    js_script (uri_of_string
+                 (function () -> "https://connect.facebook.net/en_US/all.js")) () in
+  let raw_button = "<fb:login-button
+                    data-scope=\"email\" show-faces=\"true\"
+                width=\"200\" max-rows=\"1\"></fb:login-button>" in
+  let button_f = (Eliom_content.Html5.D.unsafe_data raw_button :
+                    [> Html5_types.b ] Eliom_content.Html5.D.elt) in
+  let content = [div
+     ~a:[Bootstrap.form_horizontal; Bootstrap.col_offset 3; Bootstrap.col_lg 6] [
+       fb_script; button_f]] in
+  Document.create_page title content
+
+
 let menu_page () =
   let title = page_title "Provider List" in
   let process_provider id name  =
