@@ -144,9 +144,40 @@ let () = Queue_prototype_app.register
     Pages.register_page ()
   )
 
-let () = Queue_prototype_app.register
+let () = Eliom_registration.Html_text.register
            ~service:Services.fb_login_service
            (fun () () -> Pages.fb_login_page ())
+
+let () = Eliom_registration.Action.register
+           ~service:Services.fb_auth_service
+           (fun () () ->
+           Lwt.return ())
+
+let () = Eliom_registration.Redirection.register
+           ~service:Services.fb_post_auth_service
+           (fun () (email, (name, (mobile, id))) ->
+            let _ = Debug.value_label ~meth:"fb_post_auth_service"
+                                      ~para:"email"
+                                      ~value:email in
+            let _ = Debug.value_label ~meth:"fb_post_auth_service"
+                                      ~para:"name"
+                                      ~value:name in
+            let _ = Debug.value_label ~meth:"fb_post_auth_service"
+                                      ~para:"mobile"
+                                      ~value:mobile in
+            let _ = Debug.value_label ~meth:"fb_post_auth_service"
+                                      ~para:"id"
+                                      ~value:id in
+            lwt _ = oauthenticate_user ~email:email ~name:name ~mobile:mobile ~pwd:id in
+            lwt session = Session.get_person_safe () in
+            match session with
+            | Some(p) ->
+               let _ = Debug.info "[fb_post_auth_service] existed" in
+               Lwt.return Services.menu_service
+            | None ->
+               let _ = Debug.info "[fb_post_auth_service] empty" in
+               Lwt.return Services.login_service
+           )
 
 let () = Eliom_registration.Redirection.register
            ~options:`Found

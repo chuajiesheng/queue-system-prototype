@@ -31,6 +31,18 @@ let create_account_service =
 let fb_login_service =
   service ~path:["fb"] ~get_params:Eliom_parameter.unit ()
 
+let fb_auth_service =
+  service
+    ~path:["fb_auth"]
+    ~get_params:Eliom_parameter.unit ()
+
+let fb_post_auth_service =
+  post_service
+    ~fallback:fb_auth_service
+    ~post_params:Eliom_parameter.(string "one" **
+                                    (string "two" **
+                                       (string "three" ** string "four"))) ()
+
 let menu_service =
   service ~path:["menu"] ~get_params:Eliom_parameter.unit ()
 
