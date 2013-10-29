@@ -11,6 +11,7 @@ let get_person () =
 
 let get_person_safe () =
   try
+    let _ = Debug.info "[get_person_safe] getting person" in
     let p = get_person () in
     p
   with _ ->
